@@ -178,6 +178,12 @@
       word-break: break-all;
     }
 
+    @keyframes blink-red-white {
+      0%   { color: #ff4141; }
+      50%  { color: #fff; }
+    }
+    .data-val.blink { animation: blink-red-white 1s steps(1) infinite; }
+
     .confirm-cta {
       font-size: 1rem;
       color: #00ff41;
@@ -307,7 +313,7 @@
 </head>
 <body>
   <header>
-    <h1>Make your Privacy Confession</h1>
+    <h1 id="page-title">Make your Privacy Confession</h1>
     <span id="clock"></span>
   </header>
 
@@ -325,7 +331,7 @@
       <div class="confirm-label">transmission received</div>
       <p class="confirm-intro">You typed this in private.<br>But you left a trail.</p>
       <div class="data-table" id="data-table"></div>
-      <p class="confirm-cta" id="confirm-cta">That's why Gnosis VPN exists.</p>
+      <p class="confirm-cta" id="confirm-cta">That's why Gnosis VPN exists.<br>Change your connection to privacy.</p>
 
       <div id="waitlist-signup">
         <div class="waitlist-label">join the waitlist</div>
@@ -415,7 +421,7 @@
       k.className = 'data-key';
       k.textContent = 'IP address';
       const v = document.createElement('span');
-      v.className = 'data-val';
+      v.className = 'data-val blink';
       v.textContent = ip;
       row.append(k, v);
       table.appendChild(row);
@@ -443,6 +449,7 @@
           const confirmView = document.getElementById('confirm-view');
           formView.style.display    = 'none';
           confirmView.style.display = 'block';
+          document.getElementById('page-title').textContent = 'You made your privacy confession';
           showConfirmView();
         } else {
           const body = await res.json().catch(() => ({}));
@@ -494,6 +501,7 @@
       document.getElementById('confirm-cta').style.opacity = '0';
       document.getElementById('confirm-view').style.display = 'none';
       document.getElementById('form-view').style.display = 'block';
+      document.getElementById('page-title').textContent = 'Make your Privacy Confession';
     }
 
     document.getElementById('no-vpn-btn').addEventListener('click', () => {
