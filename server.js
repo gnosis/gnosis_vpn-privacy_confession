@@ -106,23 +106,6 @@ app.get('/api/confessions', async (req, res) => {
   }
 });
 
-app.post('/api/email', async (req, res) => {
-  const email = (req.body.email || '').trim().toLowerCase();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ error: 'Invalid email' });
-  }
-  try {
-    await pool.query(
-      'INSERT INTO emails (email, submitted_at) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING',
-      [email, Math.floor(Date.now() / 1000)]
-    );
-    res.json({ ok: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
 // ── Admin page ───────────────────────────────────────────────────────────────
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
@@ -158,17 +141,8 @@ app.delete('/api/admin/confession/:id', adminAuth, async (req, res) => {
 
 app.get('/api/admin/download', adminAuth, async (req, res) => {
   const confessions = await pool.query('SELECT * FROM confessions ORDER BY id');
-  const emails      = await pool.query('SELECT * FROM emails ORDER BY id');
   res.setHeader('Content-Disposition', 'attachment; filename="confessions.json"');
-  res.json({ confessions: confessions.rows, emails: emails.rows });
-});
-
-app.get('/api/admin/emails', adminAuth, async (req, res) => {
-  const { rows } = await pool.query('SELECT email, submitted_at FROM emails ORDER BY id');
-  const csv = ['email,submitted_at', ...rows.map(e => `${e.email},${e.submitted_at}`)].join('\n');
-  res.setHeader('Content-Type', 'text/csv');
-  res.setHeader('Content-Disposition', 'attachment; filename="emails.csv"');
-  res.send(csv);
+  res.json({ confessions: confessions.rows });
 });
 
 if (!ADMIN_PW) {

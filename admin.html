@@ -216,7 +216,6 @@
       <h1>Admin // Confession Moderation</h1>
       <div class="header-actions">
         <span id="status-msg"></span>
-        <button class="sm" id="download-emails-btn">[ download emails ]</button>
         <button class="sm" id="download-btn">[ download db ]</button>
         <button class="sm dim" id="logout-btn">[ logout ]</button>
       </div>
@@ -301,10 +300,6 @@
     // ── DOWNLOAD ──
     document.getElementById('download-btn').addEventListener('click', () => {
       window.location.href = '/api/admin/download';
-    });
-
-    document.getElementById('download-emails-btn').addEventListener('click', () => {
-      window.location.href = '/api/admin/emails';
     });
 
     // ── PANEL ──

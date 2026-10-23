@@ -54,5 +54,4 @@ The database tables are created automatically on first run.
 Visit `/admin` and enter the admin password.
 
 - **Confessions** — everything on the wall; delete removes it
-- **Download DB** — full JSON backup of all confessions and emails
-- **Download emails** — CSV of voucher signups
+- **Download DB** — full JSON backup of all confessions
