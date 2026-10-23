@@ -97,7 +97,7 @@ app.post('/api/confession', async (req, res) => {
 app.get('/api/confessions', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, text, submitted_at FROM confessions WHERE approved = TRUE ORDER BY submitted_at DESC'
+      'SELECT id, text, submitted_at FROM confessions ORDER BY submitted_at DESC'
     );
     res.json(rows);
   } catch (e) {
@@ -146,22 +146,6 @@ app.get('/api/admin/confessions', adminAuth, async (req, res) => {
     'SELECT id, text, submitted_at, approved FROM confessions ORDER BY submitted_at DESC'
   );
   res.json(rows);
-});
-
-app.post('/api/admin/approve/:id', adminAuth, async (req, res) => {
-  const { rowCount } = await pool.query(
-    'UPDATE confessions SET approved = TRUE WHERE id = $1', [parseInt(req.params.id)]
-  );
-  if (!rowCount) return res.status(404).json({ error: 'Not found' });
-  res.json({ ok: true });
-});
-
-app.post('/api/admin/unapprove/:id', adminAuth, async (req, res) => {
-  const { rowCount } = await pool.query(
-    'UPDATE confessions SET approved = FALSE WHERE id = $1', [parseInt(req.params.id)]
-  );
-  if (!rowCount) return res.status(404).json({ error: 'Not found' });
-  res.json({ ok: true });
 });
 
 app.delete('/api/admin/confession/:id', adminAuth, async (req, res) => {

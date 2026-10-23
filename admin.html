@@ -133,7 +133,7 @@
     /* ── SPLIT LAYOUT ── */
     .split {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
     }
 
     .col {
@@ -160,7 +160,6 @@
       border: 1px solid #003b14;
       padding: 0.9rem;
     }
-    .confession-card.approved { border-color: #007a28; }
 
     .confession-text {
       font-size: 0.85rem;
@@ -225,12 +224,8 @@
 
     <div class="split">
       <div class="col">
-        <div class="col-title">pending <span class="count" id="pending-count"></span></div>
-        <div class="confession-list" id="pending-list"></div>
-      </div>
-      <div class="col">
-        <div class="col-title">approved <span class="count" id="approved-count"></span></div>
-        <div class="confession-list" id="approved-list"></div>
+        <div class="col-title">confessions <span class="count" id="confession-count"></span></div>
+        <div class="confession-list" id="confession-list"></div>
       </div>
     </div>
 
@@ -329,9 +324,9 @@
       return res;
     }
 
-    function makeCard(c, isPending) {
+    function makeCard(c) {
       const card = document.createElement('div');
-      card.className = 'confession-card' + (isPending ? '' : ' approved');
+      card.className = 'confession-card';
 
       const text = document.createElement('p');
       text.className = 'confession-text';
@@ -344,31 +339,12 @@
       const actions = document.createElement('div');
       actions.className = 'card-actions';
 
-      if (isPending) {
-        const approve = document.createElement('button');
-        approve.className = 'sm';
-        approve.textContent = '[ approve ]';
-        approve.addEventListener('click', () => doAction('approve', c.id));
+      const del = document.createElement('button');
+      del.className = 'sm danger';
+      del.textContent = '[ delete ]';
+      del.addEventListener('click', () => deleteConfession(c.id));
 
-        const del = document.createElement('button');
-        del.className = 'sm danger';
-        del.textContent = '[ delete ]';
-        del.addEventListener('click', () => doAction('delete', c.id));
-
-        actions.append(approve, del);
-      } else {
-        const unapprove = document.createElement('button');
-        unapprove.className = 'sm dim';
-        unapprove.textContent = '[ unapprove ]';
-        unapprove.addEventListener('click', () => doAction('unapprove', c.id));
-
-        const del = document.createElement('button');
-        del.className = 'sm danger';
-        del.textContent = '[ delete ]';
-        del.addEventListener('click', () => doAction('delete', c.id));
-
-        actions.append(unapprove, del);
-      }
+      actions.append(del);
 
       card.append(text, meta, actions);
       return card;
@@ -379,42 +355,25 @@
         const res  = await apiCall('GET', '/api/admin/confessions');
         const rows = await res.json();
 
-        const pending  = rows.filter(r => !r.approved);
-        const approved = rows.filter(r =>  r.approved);
+        document.getElementById('confession-count').textContent = '(' + rows.length + ')';
 
-        document.getElementById('pending-count').textContent  = '(' + pending.length  + ')';
-        document.getElementById('approved-count').textContent = '(' + approved.length + ')';
+        const list = document.getElementById('confession-list');
+        list.innerHTML = '';
 
-        const pList = document.getElementById('pending-list');
-        const aList = document.getElementById('approved-list');
-        pList.innerHTML = '';
-        aList.innerHTML = '';
-
-        if (pending.length === 0) {
-          pList.innerHTML = '<p class="empty-state">no pending confessions</p>';
+        if (rows.length === 0) {
+          list.innerHTML = '<p class="empty-state">no confessions</p>';
         } else {
-          pending.forEach(c => pList.appendChild(makeCard(c, true)));
-        }
-
-        if (approved.length === 0) {
-          aList.innerHTML = '<p class="empty-state">no approved confessions</p>';
-        } else {
-          approved.forEach(c => aList.appendChild(makeCard(c, false)));
+          rows.forEach(c => list.appendChild(makeCard(c)));
         }
       } catch (e) {
         console.error(e);
       }
     }
 
-    async function doAction(action, id) {
+    async function deleteConfession(id) {
       try {
-        if (action === 'delete') {
-          await apiCall('DELETE', '/api/admin/confession/' + id);
-          setStatus('deleted #' + id);
-        } else {
-          await apiCall('POST', '/api/admin/' + action + '/' + id);
-          setStatus(action + 'd #' + id);
-        }
+        await apiCall('DELETE', '/api/admin/confession/' + id);
+        setStatus('deleted #' + id);
         loadConfessions();
       } catch (e) {
         console.error(e);
