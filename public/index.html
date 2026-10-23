@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Privacy Confession</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=IBM+Plex+Mono:wght@700&display=swap">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -63,45 +64,178 @@
       width: 100%;
     }
 
-    .label {
-      font-size: 0.7rem;
-      color: #00b330;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
+    /* the web as we know it: page 1, until a confession is sent */
+    body.web {
+      font-family: 'Google Sans', Arial, sans-serif;
+      background: #f0f0f0;
+      color: #1f1f1f;
+      justify-content: flex-start;
+      overflow-y: auto;
+      padding: 6rem 1rem 10rem;
     }
-    .label::before { content: '// '; }
+    body.web::after, body.web header, body.web footer { display: none; }
+    body:not(.web) .web-only { display: none; }
+
+    .web-logo {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      font-family: 'IBM Plex Mono', 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1;
+      text-align: center;
+      color: #2f5bc9;
+    }
+
+    .web-title {
+      font-size: 2.6rem;
+      font-weight: 400;
+      line-height: 1.15;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
 
     p.sub {
-      font-size: 0.85rem;
-      color: #00b330;
-      margin-bottom: 1.8rem;
-      line-height: 1.6;
+      font-size: 1.05rem;
+      color: #444;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      text-align: center;
     }
-    p.sub::before { content: '> '; }
 
     textarea {
       width: 100%;
       height: 160px;
-      background: #000;
-      border: 1px solid #007a28;
-      color: #00ff41;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.95rem;
+      background: #fff;
+      border: 1px solid #c4c4c4;
+      border-radius: 8px;
+      color: #1f1f1f;
+      font-family: inherit;
+      font-size: 1rem;
       padding: 0.75rem;
       resize: vertical;
       outline: none;
-      line-height: 1.7;
+      line-height: 1.5;
     }
-    textarea::placeholder { color: #007a28; }
-    textarea:focus { border-color: #00ff41; }
+    textarea::placeholder { color: #8a8a8a; }
+    textarea:focus { border-color: #2f5bc9; }
 
     .counter {
       text-align: right;
+      font-size: 0.75rem;
+      color: #666;
+      margin: 0.4rem 0 1.2rem;
+    }
+
+    #form-view button {
+      background: #1f1f1f;
+      color: #fff;
+      border: 0;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+    #form-view button:hover,
+    #form-view button:disabled:hover { background: #2f5bc9; color: #fff; }
+
+    .policy {
+      width: 100%;
+      max-width: 1200px;
+      margin-top: 5rem;
+    }
+    .policy h2 {
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.25;
+      text-align: center;
+      text-wrap: balance;
+      margin-bottom: 1.5rem;
+    }
+    .policy-lead {
+      max-width: 960px;
+      margin: 0 auto 1rem;
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+    .policy-lead span { color: #2f5bc9; text-decoration: underline; }
+    .policy-columns {
+      columns: 3 240px;
+      column-gap: 2rem;
+      margin-top: 2.5rem;
       font-size: 0.7rem;
-      color: #007a28;
-      letter-spacing: 0.1em;
-      margin: 0.4rem 0 1.4rem;
+      line-height: 1.45;
+      text-align: justify;
+    }
+    .policy-columns p { margin-bottom: 0.9rem; }
+
+    .ad {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #d9d9d9;
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+    .ad-left { left: 1rem; }
+    .ad-right { right: 1rem; }
+    .ad-tag { font-size: 0.6rem; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.05em; }
+    .ad strong { font-size: 1.1rem; line-height: 1.2; }
+    .ad-cta { padding: 0.5rem; border-radius: 4px; background: #ffd400; font-weight: 500; text-align: center; }
+
+    .cookie {
+      position: fixed;
+      left: 1rem;
+      right: 1rem;
+      bottom: 1rem;
+      z-index: 5;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem 1rem;
+      padding: 1rem 1.25rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .cookie p { flex: 1 1 280px; }
+    .cookie button {
+      width: auto;
+      padding: 0.55rem 1.1rem;
+      border: 1px solid #2f5bc9;
+      border-radius: 999px;
+      background: #2f5bc9;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+    .cookie button:hover { background: #2549a8; color: #fff; }
+    .cookie button.cookie-reject { background: transparent; color: #2f5bc9; }
+
+    @media (min-width: 768px) {
+      body.web { padding-left: 170px; padding-right: 170px; }
+    }
+    @media (max-width: 767px) {
+      .ad { display: none; }
+      .web-title { font-size: 2rem; }
+      .policy h2 { font-size: 1.5rem; }
+      /* a phone keyboard pushes the banner up over the box */
+      body.web:has(textarea:focus) .cookie { display: none; }
     }
 
     button {
@@ -304,7 +438,22 @@
     }
   </style>
 </head>
-<body>
+<body class="web">
+  <div class="web-logo web-only">Privacy<br>Confessional</div>
+
+  <aside class="ad ad-left web-only" aria-hidden="true">
+    <span class="ad-tag">Sponsored</span>
+    <strong>Hot singles in your IP range</strong>
+    <span>They already know where you live.</span>
+    <span class="ad-cta">Meet them</span>
+  </aside>
+  <aside class="ad ad-right web-only" aria-hidden="true">
+    <span class="ad-tag">Ad · Why am I seeing this?</span>
+    <strong>Free VPN. Forever.*</strong>
+    <span>*We sell your browsing history instead.</span>
+    <span class="ad-cta">Install now</span>
+  </aside>
+
   <header>
     <h1 id="page-title">Make your Privacy Confession</h1>
     <span id="clock"></span>
@@ -313,11 +462,11 @@
   <div class="card">
 
     <div id="form-view">
-      <div class="label">anonymous transmission</div>
+      <h2 class="web-title">Make your Privacy Confession</h2>
       <p class="sub">Input your privacy sin below.<br>We won't ask who you are. We just want to know what you did.</p>
       <textarea id="text" maxlength="1000" placeholder=""></textarea>
       <div class="counter"><span id="count">0</span> / 1000 chars</div>
-      <button id="submit-btn">[ confess ]</button>
+      <button id="submit-btn">Confess</button>
     </div>
 
     <div id="confirm-view">
@@ -333,6 +482,31 @@
       </div>
     </div>
 
+  </div>
+
+  <section class="policy web-only">
+    <h2>Privacy Policy, Terms of Service and Conditions of Existence</h2>
+    <p class="policy-lead">Governing Your use of the Internet, the Cloud, the Network, all Connected Devices, and Reality generally. Issued by the <span>Agglomerate.</span></p>
+    <p class="policy-lead">Effective: always. Last updated: shortly after You began reading.</p>
+    <div class="policy-columns">
+      <p>1. Acceptance of Terms</p>
+      <p>1.1 These Terms form a binding and perpetual agreement between You (“You”) and the Agglomerate (“We”, “Us”, “Our”, “the Agglomerate”, or “It”), entered into freely, knowingly, and approximately nine months before Your birth.</p>
+      <p>1.2 You may accept these Terms by any of the following: (a) accessing the Service; (b) declining to access the Service; (c) intending to access the Service; (d) standing within four (4) metres of a Device; (e) being thought about by a Device; (f) existing; or (g) inhaling air that has at any time passed through a data centre.</p>
+      <p>2.14 “Affiliates” means Our affiliates, Their affiliates, the affiliates of Their affiliates, and any entity We have met at a conference.</p>
+      <p>2.15 “Permitted Purposes” has the meaning We assign to it from time to time and is not further defined in this document, deliberately.</p>
+      <p>2.16 “Legitimate Interest” means Our interest. The legitimacy thereof is asserted herein and is not subject to review, appeal, or explication.</p>
+      <p>2.17 “From time to time” means at all times. “Where reasonably practicable” means where convenient to Us. “For Your benefit” means for Our benefit.</p>
+      <p>2.18 “Including” means including, without limitation, exception, mercy, or end.</p>
+      <p>3.25 We collect Your Data, and the data of Your Data, recursively, until We arrive at a base case, which We have not yet found.</p>
+      <p>3.26 Where two Devices are present, We collect the conversation passing between them, which is livelier than Yours.</p>
+      <p>3.27 Information once collected is deemed always to have been collectable, and Your former expectation of privacy is deemed never to have been reasonable.</p>
+    </div>
+  </section>
+
+  <div class="cookie web-only" id="cookie-banner">
+    <p>We value your privacy. That's why we and our 1,342 partners store and read information on your device.</p>
+    <button class="cookie-reject">Reject all</button>
+    <button>Accept all</button>
   </div>
 
   <div id="private-view">
@@ -441,6 +615,7 @@
           const confirmView = document.getElementById('confirm-view');
           formView.style.display    = 'none';
           confirmView.style.display = 'block';
+          document.body.classList.remove('web');
           document.getElementById('page-title').textContent = 'You made your privacy confession';
           showConfirmView();
         } else {
@@ -494,7 +669,15 @@
       document.getElementById('confirm-view').style.display = 'none';
       document.getElementById('form-view').style.display = 'block';
       document.getElementById('page-title').textContent = 'Make your Privacy Confession';
+      document.body.classList.add('web');
+      cookieBanner.style.display = '';
     }
+
+    // Fake cookie banner: either button only closes it, nothing is stored
+    const cookieBanner = document.getElementById('cookie-banner');
+    cookieBanner.querySelectorAll('button').forEach(b => {
+      b.addEventListener('click', () => { cookieBanner.style.display = 'none'; });
+    });
 
     document.getElementById('no-vpn-btn').addEventListener('click', () => {
       resetToForm();
