@@ -2,12 +2,12 @@
 
 > **Status:** Event prototype — not production-hardened.
 
-Anonymous confession wall for DappCon 2026. Submissions are held for manual admin approval before appearing on the wall.
+Anonymous confession wall for DappCon 2026. Submissions appear on the wall straight away; admins can delete them afterwards.
 
 ## Pages
 
 - `/` — submit a confession (up to 1000 characters)
-- `/wall` — public display, polls for approved confessions every 10 seconds
+- `/wall` — public display, polls for confessions every 10 seconds
 - `/admin` — moderation panel (password protected)
 
 ## Stack
@@ -53,7 +53,5 @@ The database tables are created automatically on first run.
 
 Visit `/admin` and enter the admin password.
 
-- **Pending** — approve or delete incoming confessions
-- **Approved** — live on the wall; can be unapproved or deleted
-- **Download DB** — full JSON backup of all confessions and emails
-- **Download emails** — CSV of voucher signups
+- **Confessions** — everything on the wall; delete removes it
+- **Download DB** — full JSON backup of all confessions
