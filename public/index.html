@@ -300,7 +300,6 @@
       50%  { color: #fff; }
     }
     .data-val.blink { font-weight: bold; animation: blink-green-white 1s steps(1) infinite; }
-    .data-table .confirm-label { margin: 1rem 0 0.2rem; }
 
     .confirm-cta {
       font-size: 1rem;
@@ -495,7 +494,6 @@
       <img class="private-logo" src="/gnosis_vpn.svg" alt="Gnosis VPN">
       <div id="private-form">
         <h2>Change your connection to privacy</h2>
-        <p class="private-sub">This form is end-to-end encrypted by CryptPad.</p>
         <div class="form-card">
           <iframe id="waitlist-frame" title="Gnosis VPN waitlist form"></iframe>
         </div>
@@ -552,17 +550,6 @@
       counter.textContent = textarea.value.length;
     });
 
-    // Typical trackers' guesses about a Devcon visitor; 3 random ones per confession
-    const guesses = [
-      'Travelling: arrived in the last 3 days',
-      'Time zone changed this week → IST',
-      'Likely holds ETH',
-      'Phone has 2+ wallet apps',
-      'Connected to public Wi-Fi today',
-      'Booked hotel stay, 3–6 nights',
-      'Searched “best street food without getting sick Mumbai”',
-    ];
-
     async function showConfirmView() {
       let me = { ip: 'resolving...' };
       try {
@@ -590,13 +577,6 @@
       const country = me.country ? new Intl.DisplayNames(['en'], { type: 'region' }).of(me.country) : '';
       const place = [me.city, country].filter(Boolean).join(', ');
       if (place) addRow('City / country', place, 'data-val blink');
-
-      const label = document.createElement('div');
-      label.className = 'confirm-label';
-      label.textContent = 'Profile built from your data';
-      table.appendChild(label);
-      const picks = [...guesses].sort(() => Math.random() - 0.5).slice(0, 3);
-      picks.forEach(g => addRow('Guess', g, 'data-val'));
 
       setTimeout(() => {
         document.getElementById('confirm-cta').style.opacity = '1';
