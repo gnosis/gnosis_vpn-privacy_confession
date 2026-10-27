@@ -360,24 +360,17 @@
       text-align: center;
     }
     .private-logo { height: 32px; }
-    #private-form, #private-thanks {
+    #private-form {
       width: 100%;
       flex-direction: column;
       align-items: center;
       gap: 1.5rem;
     }
     #private-form { display: flex; }
-    #private-thanks { display: none; padding-top: 20vh; }
     #private-view h2 {
       font-size: 2rem;
       font-weight: 700;
       line-height: 1.2;
-    }
-    .private-sub {
-      font-size: 1rem;
-      line-height: 1.5;
-      color: #f6f6f6;
-      opacity: 0.85;
     }
     .form-card {
       width: 100%;
@@ -499,10 +492,6 @@
         </div>
         <button id="done-btn">Done</button>
       </div>
-      <div id="private-thanks">
-        <h2>Thank you for joining the waitlist.</h2>
-        <p class="private-sub" id="private-countdown"></p>
-      </div>
     </div>
   </div>
 
@@ -618,8 +607,6 @@
     // Waitlist: the private web, with the CryptPad form
     const WAITLIST_FORM_URL = 'https://cryptpad.fr/form/#/2/form/view/d-SEVRyeTki5Yfw0PDyldXhqNBD-dsn--O24vwbCcAE/';
     const privateView   = document.getElementById('private-view');
-    const privateForm   = document.getElementById('private-form');
-    const privateThanks = document.getElementById('private-thanks');
     const waitlistFrame = document.getElementById('waitlist-frame');
 
     document.getElementById('waitlist-btn').addEventListener('click', () => {
@@ -628,17 +615,7 @@
     });
 
     document.getElementById('done-btn').addEventListener('click', () => {
-      privateForm.style.display   = 'none';
-      privateThanks.style.display = 'flex';
-      privateView.scrollTop = 0;
-      const countdown = document.getElementById('private-countdown');
-      let secs = 15;
-      countdown.textContent = `Returning to the start in ${secs}s`;
-      const timer = setInterval(() => {
-        secs--;
-        countdown.textContent = `Returning to the start in ${secs}s`;
-        if (secs <= 0) { clearInterval(timer); resetToForm(); }
-      }, 1000);
+      resetToForm();
     });
 
     function resetToForm() {
@@ -648,8 +625,6 @@
       // Unload the form so the next visitor gets a fresh one
       waitlistFrame.src = 'about:blank';
       privateView.style.display   = 'none';
-      privateForm.style.display   = '';
-      privateThanks.style.display = '';
       document.getElementById('waitlist-signup').style.opacity = '0';
       document.getElementById('confirm-cta').style.opacity = '0';
       document.getElementById('confirm-view').style.display = 'none';
