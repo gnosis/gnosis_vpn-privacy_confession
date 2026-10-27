@@ -62,7 +62,10 @@ function adminAuth(req, res, next) {
 // ── Public routes ────────────────────────────────────────────────────────────
 app.get('/api/whoami', (req, res) => {
   const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
-  res.json({ ip });
+  // Vercel adds these location headers; they are missing in local dev
+  const city    = decodeURIComponent(req.headers['x-vercel-ip-city'] || '');
+  const country = req.headers['x-vercel-ip-country'] || '';
+  res.json({ ip, city, country });
 });
 
 app.get('/wall', (req, res) => {
