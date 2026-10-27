@@ -18,6 +18,7 @@
       justify-content: center;
       padding: 2rem;
       overflow: hidden;
+      cursor: none;
     }
 
     /* scanlines */
@@ -60,14 +61,25 @@
       letter-spacing: 0.1em;
     }
 
+    #total {
+      position: fixed;
+      top: 4.5rem;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: clamp(0.9rem, 2.5vmin, 3rem);
+      color: #00b330;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
     #stage {
-      max-width: 620px;
       width: 100%;
+      padding: 0 4vw;
       text-align: left;
     }
 
     .label {
-      font-size: 0.7rem;
+      font-size: clamp(0.7rem, 2vmin, 2.5rem);
       color: #005c1f;
       letter-spacing: 0.2em;
       text-transform: uppercase;
@@ -76,8 +88,8 @@
     .label::before { content: '// '; }
 
     #confession-text {
-      font-size: 1.15rem;
-      line-height: 1.9;
+      font-weight: bold;
+      line-height: 1.35;
       color: #00ff41;
       min-height: 3rem;
       white-space: pre-wrap;
@@ -150,6 +162,8 @@
     <span id="counter"></span>
   </header>
 
+  <div id="total"></div>
+
   <div id="stage">
     <div class="label" id="label">intercepted transmission</div>
     <p id="confession-text"></p>
@@ -171,6 +185,9 @@
     const counterEl   = document.getElementById('counter');
     const progressBar = document.getElementById('progress-bar');
     const timestampEl = document.getElementById('timestamp');
+    const totalEl     = document.getElementById('total');
+    const labelEl     = document.getElementById('label');
+    let typeTimer;
 
     function pad(n) { return String(n).padStart(2, '0'); }
     function updateClock() {
@@ -182,25 +199,59 @@
     setInterval(updateClock, 1000);
     updateClock();
 
+    function showCounts() {
+      counterEl.textContent = 'record ' + (index + 1) + ' of ' + confessions.length;
+      totalEl.textContent = confessions.length + (confessions.length === 1 ? ' confession' : ' confessions') + ' intercepted';
+    }
+
     function showCurrent() {
       if (!confessions.length) {
         textEl.style.display  = 'none';
         emptyEl.style.display = 'block';
         counterEl.textContent = '';
+        totalEl.textContent   = '';
+        clearTimeout(typeTimer);
         return;
       }
 
       emptyEl.style.display = 'none';
       textEl.style.display  = 'block';
 
-      counterEl.textContent = 'record ' + (index + 1) + ' of ' + confessions.length;
+      showCounts();
+
+      const { text, submitted_at } = confessions[index];
+      labelEl.textContent = 'intercepted ' +
+        new Date(submitted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
       textEl.classList.remove('reveal', 'dismiss');
       void textEl.offsetWidth;
-      textEl.textContent = confessions[index].text;
+      fitText(text);
       textEl.classList.add('reveal');
+      typeText(text);
 
       startProgress();
+    }
+
+    // Largest size at which the whole confession fits in 60% of the screen height
+    function fitText(text) {
+      textEl.textContent = text;
+      let size = 8;
+      textEl.style.fontSize = size + 'vmin';
+      while (textEl.offsetHeight > window.innerHeight * 0.6 && size > 2) {
+        size -= 0.25;
+        textEl.style.fontSize = size + 'vmin';
+      }
+    }
+
+    // Types the confession out within about 4 seconds, however long it is
+    function typeText(text) {
+      clearTimeout(typeTimer);
+      const delay = Math.min(60, 4000 / text.length);
+      let shown = 0;
+      (function step() {
+        textEl.textContent = text.slice(0, shown);
+        if (shown++ < text.length) typeTimer = setTimeout(step, delay);
+      })();
     }
 
     function next() {
@@ -225,9 +276,21 @@
       try {
         const res  = await fetch('/api/confessions');
         const data = await res.json();
-        const known = new Set(confessions.map(c => c.id));
-        const added = data.filter(c => !known.has(c.id));
-        if (added.length) confessions.push(...added);
+        // Keep the rotation order, drop confessions deleted in admin, add new ones at the end
+        const currentId = confessions.length ? confessions[index].id : null;
+        const live  = new Set(data.map(c => c.id));
+        const kept  = confessions.filter(c => live.has(c.id));
+        const known = new Set(kept.map(c => c.id));
+        confessions = kept.concat(data.filter(c => !known.has(c.id)));
+
+        const currentIndex = confessions.findIndex(c => c.id === currentId);
+        if (currentIndex >= 0) {
+          index = currentIndex;
+          showCounts();
+        } else if (currentId !== null) {
+          index = index % (confessions.length || 1);
+          showCurrent();
+        }
       } catch (e) {
         console.error('Fetch error:', e);
       }
