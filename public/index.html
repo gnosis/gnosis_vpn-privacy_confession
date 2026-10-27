@@ -79,17 +79,20 @@
     .web-logo {
       position: absolute;
       top: 1.5rem;
-      right: 2rem;
+      left: 0;
+      right: 0;
+      white-space: nowrap;
       font-family: 'IBM Plex Mono', 'Courier New', monospace;
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.25rem;
       line-height: 1;
       text-align: center;
       color: #2f5bc9;
     }
 
     .web-title {
-      font-size: 2.6rem;
+      font-size: 2.2rem;
+      white-space: nowrap;
       font-weight: 400;
       line-height: 1.15;
       text-align: center;
@@ -142,10 +145,15 @@
     #form-view button:hover,
     #form-view button:disabled:hover { background: #2f5bc9; color: #fff; }
 
-    .ad {
+    .ad-col {
       position: fixed;
       top: 50%;
       transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .ad {
       width: 140px;
       display: flex;
       flex-direction: column;
@@ -201,8 +209,14 @@
       body.web { padding-left: 170px; padding-right: 170px; }
     }
     @media (max-width: 767px) {
-      .ad { display: none; }
-      .web-title { font-size: 2rem; }
+      .ad-left, .ad:not(.ad-keep) { display: none; }
+      .ad-col { position: static; transform: none; width: 100%; max-width: 520px; margin-bottom: 1.5rem; }
+      .ad-keep { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.6rem; padding: 0.6rem 0.8rem; }
+      .ad-keep .ad-tag { width: 100%; }
+      .ad-keep strong { font-size: 1rem; }
+      .ad-keep .ad-cta { margin-left: auto; }
+      body.web:has(textarea:focus) .ad-col { display: none; }
+      .web-title { font-size: 6.4vw; }
       /* a phone keyboard pushes the banner up over the box */
       body.web:has(textarea:focus) .cookie { display: none; }
     }
@@ -281,11 +295,12 @@
       word-break: break-all;
     }
 
-    @keyframes blink-red-white {
-      0%   { color: #ff4141; }
+    @keyframes blink-green-white {
+      0%   { color: #00ff41; }
       50%  { color: #fff; }
     }
-    .data-val.blink { animation: blink-red-white 1s steps(1) infinite; }
+    .data-val.blink { font-weight: bold; animation: blink-green-white 1s steps(1) infinite; }
+    .data-table .confirm-label { margin: 1rem 0 0.2rem; }
 
     .confirm-cta {
       font-size: 1rem;
@@ -408,20 +423,36 @@
   </style>
 </head>
 <body class="web">
-  <div class="web-logo web-only">Privacy<br>Confessional</div>
+  <div class="web-logo web-only">Privacy Confessional</div>
 
-  <aside class="ad ad-left web-only" aria-hidden="true">
-    <span class="ad-tag">Sponsored</span>
-    <strong>Hot singles in your IP range</strong>
-    <span>They already know where you live.</span>
-    <span class="ad-cta">Meet them</span>
-  </aside>
-  <aside class="ad ad-right web-only" aria-hidden="true">
-    <span class="ad-tag">Ad · Why am I seeing this?</span>
-    <strong>Free VPN. Forever.*</strong>
-    <span>*We sell your browsing history instead.</span>
-    <span class="ad-cta">Install now</span>
-  </aside>
+  <div class="ad-col ad-left web-only" aria-hidden="true">
+    <aside class="ad">
+      <span class="ad-tag">Sponsored</span>
+      <strong>Hot singles in your IP range</strong>
+      <span>They already know where you live.</span>
+      <span class="ad-cta">Meet them</span>
+    </aside>
+    <aside class="ad">
+      <span class="ad-tag">Ad · Why am I seeing this?</span>
+      <strong>Your insurance quote changed</strong>
+      <span>You searched "chest pain" at 2 a.m.</span>
+      <span class="ad-cta">See new price</span>
+    </aside>
+  </div>
+  <div class="ad-col ad-right web-only" aria-hidden="true">
+    <aside class="ad ad-keep">
+      <span class="ad-tag">Ad · Why am I seeing this?</span>
+      <strong>Free VPN. Forever.*</strong>
+      <span>*We sell your browsing history instead.</span>
+      <span class="ad-cta">Install now</span>
+    </aside>
+    <aside class="ad">
+      <span class="ad-tag">Sponsored</span>
+      <strong>Free conference Wi-Fi</strong>
+      <span>Sign in with Google to continue.</span>
+      <span class="ad-cta">Connect</span>
+    </aside>
+  </div>
 
   <header>
     <h1 id="page-title">Make your Privacy Confession</h1>
@@ -463,8 +494,8 @@
     <div class="private-inner">
       <img class="private-logo" src="/gnosis_vpn.svg" alt="Gnosis VPN">
       <div id="private-form">
-        <h2>Welcome to the private web.</h2>
-        <p class="private-sub">Join the Gnosis VPN waitlist. This form is end-to-end encrypted by CryptPad.</p>
+        <h2>Change your connection to privacy</h2>
+        <p class="private-sub">This form is end-to-end encrypted by CryptPad.</p>
         <div class="form-card">
           <iframe id="waitlist-frame" title="Gnosis VPN waitlist form"></iframe>
         </div>
@@ -521,26 +552,51 @@
       counter.textContent = textarea.value.length;
     });
 
+    // Typical trackers' guesses about a Devcon visitor; 3 random ones per confession
+    const guesses = [
+      'Travelling: arrived in the last 3 days',
+      'Time zone changed this week → IST',
+      'Likely holds ETH',
+      'Phone has 2+ wallet apps',
+      'Connected to public Wi-Fi today',
+      'Booked hotel stay, 3–6 nights',
+      'Searched “best street food without getting sick Mumbai”',
+    ];
+
     async function showConfirmView() {
-      let ip = 'resolving...';
+      let me = { ip: 'resolving...' };
       try {
         const r = await fetch('/api/whoami');
-        ip = (await r.json()).ip;
+        me = await r.json();
       } catch {}
 
       const table = document.getElementById('data-table');
       table.innerHTML = '';
 
-      const row = document.createElement('div');
-      row.className = 'data-row';
-      const k = document.createElement('span');
-      k.className = 'data-key';
-      k.textContent = 'IP address';
-      const v = document.createElement('span');
-      v.className = 'data-val blink';
-      v.textContent = ip;
-      row.append(k, v);
-      table.appendChild(row);
+      function addRow(key, val, valClass) {
+        const row = document.createElement('div');
+        row.className = 'data-row';
+        const k = document.createElement('span');
+        k.className = 'data-key';
+        k.textContent = key;
+        const v = document.createElement('span');
+        v.className = valClass;
+        v.textContent = val;
+        row.append(k, v);
+        table.appendChild(row);
+      }
+
+      addRow('IP address', me.ip, 'data-val blink');
+      const country = me.country ? new Intl.DisplayNames(['en'], { type: 'region' }).of(me.country) : '';
+      const place = [me.city, country].filter(Boolean).join(', ');
+      if (place) addRow('City / country', place, 'data-val blink');
+
+      const label = document.createElement('div');
+      label.className = 'confirm-label';
+      label.textContent = 'Profile built from your data';
+      table.appendChild(label);
+      const picks = [...guesses].sort(() => Math.random() - 0.5).slice(0, 3);
+      picks.forEach(g => addRow('Guess', g, 'data-val'));
 
       setTimeout(() => {
         document.getElementById('confirm-cta').style.opacity = '1';
