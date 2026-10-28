@@ -34,6 +34,7 @@ async function initDb() {
       answers         JSONB   NOT NULL,
       contact_channel TEXT    NOT NULL,
       contact_enc     TEXT    NOT NULL,
+      contact_hash    TEXT    NOT NULL UNIQUE,
       submitted_at    INTEGER NOT NULL
     );
   `);
@@ -174,6 +175,13 @@ function encryptContact(text) {
   return [iv, cipher.getAuthTag(), enc].map(b => b.toString('base64')).join('.');
 }
 
+// Same contact on the same channel always gives the same hash, so a second sign-up is skipped
+const CONTACT_HASH_KEY = crypto.createHmac('sha256', WAITLIST_KEY).update('waitlist-contact-hash').digest();
+function contactHash(channel, contact) {
+  const normalized = contact.trim().toLowerCase().replace(/^@/, '');
+  return crypto.createHmac('sha256', CONTACT_HASH_KEY).update(channel + ':' + normalized).digest('hex');
+}
+
 app.post('/api/waitlist', async (req, res) => {
   if (WAITLIST_KEY.length !== 32) {
     console.error('WAITLIST_KEY env var is missing or not 32 bytes.');
@@ -189,16 +197,11 @@ app.post('/api/waitlist', async (req, res) => {
   delete answers[contactField];
   const now = Math.floor(Date.now() / 1000);
   try {
-    // Global rate limit: reject if another sign-up came in within 5 seconds
-    const { rows } = await pool.query(
-      'SELECT submitted_at FROM waitlist ORDER BY submitted_at DESC LIMIT 1'
-    );
-    if (rows.length && now - rows[0].submitted_at < 5) {
-      return res.status(429).json({ error: 'Too many sign-ups. Please wait a moment.' });
-    }
+    // A repeat sign-up still gets ok, so the form doesn't reveal who is already on the list
     await pool.query(
-      'INSERT INTO waitlist (answers, contact_channel, contact_enc, submitted_at) VALUES ($1, $2, $3, $4)',
-      [answers, channel, encryptContact(contact), now]
+      `INSERT INTO waitlist (answers, contact_channel, contact_enc, contact_hash, submitted_at)
+       VALUES ($1, $2, $3, $4, $5) ON CONFLICT (contact_hash) DO NOTHING`,
+      [answers, channel, encryptContact(contact), contactHash(channel, contact), now]
     );
     res.json({ ok: true });
   } catch (e) {
