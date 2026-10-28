@@ -405,7 +405,7 @@
 
       const meta = document.createElement('p');
       meta.className = 'confession-meta';
-      meta.textContent = '#' + s.id + '  ·  ' + fmt(s.submitted_at);
+      meta.textContent = 'sent on ' + s.sent_on;
 
       const actions = document.createElement('div');
       actions.className = 'card-actions';
@@ -413,7 +413,7 @@
       const del = document.createElement('button');
       del.className = 'sm danger';
       del.textContent = 'Delete';
-      del.addEventListener('click', () => deleteSignup(s.id));
+      del.addEventListener('click', () => deleteSignup(s));
 
       actions.append(del);
 
@@ -441,11 +441,11 @@
       }
     }
 
-    async function deleteSignup(id) {
-      if (!confirm('Delete sign-up #' + id + '? This cannot be undone.')) return;
+    async function deleteSignup(s) {
+      if (!confirm('Delete the sign-up of ' + s.contact + '? This cannot be undone.')) return;
       try {
-        await apiCall('DELETE', '/api/admin/waitlist/' + id);
-        setStatus('deleted sign-up #' + id);
+        await apiCall('DELETE', '/api/admin/waitlist/' + encodeURIComponent(s.id));
+        setStatus('Sign-up deleted');
         loadWaitlist();
       } catch (e) {
         console.error(e);

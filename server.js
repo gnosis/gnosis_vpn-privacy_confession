@@ -269,7 +269,7 @@ const shortLabel = q => q.replace(/\s*\(If you.*$/, '');
       const group = item.opts.when[0];
       return collect(item.opts.questions, shortLabel(waitlistForm.form[group[group.length - 1].q].q));
     }
-    if (item.type === 'md' || Object.values(CONTACT_FIELDS).includes(id)) return;
+    if (item.type === 'md' || id === CONTACT_QUESTION || Object.values(CONTACT_FIELDS).includes(id)) return;
     if (waitlistQuestions.some(q => q.id === id)) return;
     const text = shortLabel(item.q);
     waitlistQuestions.push({ id, label: item.type === 'input' && openedBy ? openedBy + ' — ' + text : text });
@@ -287,14 +287,15 @@ function decryptContact(stored) {
   }
 }
 
+// Newest day first; within a day the random id decides, so the list doesn't show the sign-up order
 async function loadSignups() {
   const { rows } = await pool.query(
-    'SELECT id, answers, contact_channel, contact_enc, submitted_at FROM waitlist ORDER BY submitted_at DESC'
+    "SELECT id, answers, contact_enc, to_char(submitted_on, 'YYYY-MM-DD') AS sent_on FROM waitlist ORDER BY submitted_on DESC, id"
   );
   return rows.map(r => ({
     id: r.id,
-    submitted_at: r.submitted_at,
-    contact_channel: r.contact_channel,
+    sent_on: r.sent_on,
+    contact_channel: r.answers[CONTACT_QUESTION],
     contact: decryptContact(r.contact_enc),
     answers: r.answers,
   }));
@@ -313,9 +314,9 @@ function csvCell(value) {
 
 app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
   const signups = await loadSignups();
-  const header = ['Sent (UTC)', 'Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
+  const header = ['Sent on', 'Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
   const lines = signups.map(s => [
-    new Date(s.submitted_at * 1000).toISOString().slice(0, 16).replace('T', ' '),
+    s.sent_on,
     s.contact_channel,
     s.contact,
     ...waitlistQuestions.map(q => s.answers[q.id]),
@@ -327,7 +328,7 @@ app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
 
 app.delete('/api/admin/waitlist/:id', adminAuth, async (req, res) => {
   const { rowCount } = await pool.query(
-    'DELETE FROM waitlist WHERE id = $1', [parseInt(req.params.id)]
+    'DELETE FROM waitlist WHERE id = $1', [req.params.id]
   );
   if (!rowCount) return res.status(404).json({ error: 'Not found' });
   res.json({ ok: true });
