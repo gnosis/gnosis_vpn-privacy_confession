@@ -29,13 +29,15 @@ async function initDb() {
       email        TEXT    UNIQUE NOT NULL,
       submitted_at INTEGER NOT NULL
     );
+    -- No timestamp and a random id: the order of sign-ups must not be linkable
+    -- to the public confession times (the waitlist button appears right after confessing)
     CREATE TABLE IF NOT EXISTS waitlist (
-      id              SERIAL  PRIMARY KEY,
+      id              TEXT    PRIMARY KEY,
       answers         JSONB   NOT NULL,
       contact_channel TEXT    NOT NULL,
       contact_enc     TEXT    NOT NULL,
       contact_hash    TEXT    NOT NULL UNIQUE,
-      submitted_at    INTEGER NOT NULL
+      submitted_on    DATE    NOT NULL DEFAULT CURRENT_DATE
     );
   `);
 }
@@ -195,13 +197,12 @@ app.post('/api/waitlist', async (req, res) => {
   }
   const contact = answers[contactField];
   delete answers[contactField];
-  const now = Math.floor(Date.now() / 1000);
   try {
     // A repeat sign-up still gets ok, so the form doesn't reveal who is already on the list
     await pool.query(
-      `INSERT INTO waitlist (answers, contact_channel, contact_enc, contact_hash, submitted_at)
+      `INSERT INTO waitlist (id, answers, contact_channel, contact_enc, contact_hash)
        VALUES ($1, $2, $3, $4, $5) ON CONFLICT (contact_hash) DO NOTHING`,
-      [answers, channel, encryptContact(contact), contactHash(channel, contact), now]
+      [crypto.randomUUID(), answers, channel, encryptContact(contact), contactHash(channel, contact)]
     );
     res.json({ ok: true });
   } catch (e) {
