@@ -133,7 +133,10 @@
     /* ── SPLIT LAYOUT ── */
     .split {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 900px) {
+      .split { grid-template-columns: 1fr; }
     }
 
     .col {
@@ -178,6 +181,10 @@
     }
 
     .card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .col-title button.sm { float: right; margin-top: -0.3rem; }
+    .signup-answers { font-size: 0.75rem; line-height: 1.5; color: #00b330; margin-bottom: 0.7rem; }
+    .signup-answers p + p { margin-top: 0.35rem; }
+    .signup-answers span { color: #007a28; }
 
     .empty-state {
       font-size: 0.8rem;
@@ -225,6 +232,12 @@
       <div class="col">
         <div class="col-title">confessions <span class="count" id="confession-count"></span></div>
         <div class="confession-list" id="confession-list"></div>
+      </div>
+      <div class="col">
+        <div class="col-title">waitlist <span class="count" id="waitlist-count"></span>
+          <button class="sm" id="csv-btn">[ download csv ]</button>
+        </div>
+        <div class="confession-list" id="waitlist-list"></div>
       </div>
     </div>
 
@@ -307,6 +320,7 @@
       loginOverlay.style.display = 'none';
       adminPanel.style.display   = 'block';
       loadConfessions();
+      loadWaitlist();
     }
 
     async function apiCall(method, url) {
@@ -375,12 +389,85 @@
       }
     }
 
+    // ── WAITLIST ──
+    document.getElementById('csv-btn').addEventListener('click', () => {
+      window.location.href = '/api/admin/waitlist.csv';
+    });
+
+    function makeSignupCard(s, questions) {
+      const card = document.createElement('div');
+      card.className = 'confession-card';
+
+      const contact = document.createElement('p');
+      contact.className = 'confession-text';
+      contact.textContent = s.contact_channel + ': ' + s.contact;
+
+      const answers = document.createElement('div');
+      answers.className = 'signup-answers';
+      questions.filter(q => s.answers[q.id] !== undefined).forEach(q => {
+        const line = document.createElement('p');
+        const label = document.createElement('span');
+        label.textContent = q.label + ': ';
+        line.append(label, [].concat(s.answers[q.id]).join('; '));
+        answers.appendChild(line);
+      });
+
+      const meta = document.createElement('p');
+      meta.className = 'confession-meta';
+      meta.textContent = '#' + s.id + '  ·  ' + fmt(s.submitted_at);
+
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const del = document.createElement('button');
+      del.className = 'sm danger';
+      del.textContent = '[ delete ]';
+      del.addEventListener('click', () => deleteSignup(s.id));
+
+      actions.append(del);
+
+      card.append(contact, answers, meta, actions);
+      return card;
+    }
+
+    async function loadWaitlist() {
+      try {
+        const res = await apiCall('GET', '/api/admin/waitlist');
+        const { questions, signups } = await res.json();
+
+        document.getElementById('waitlist-count').textContent = '(' + signups.length + ')';
+
+        const list = document.getElementById('waitlist-list');
+        list.innerHTML = '';
+
+        if (signups.length === 0) {
+          list.innerHTML = '<p class="empty-state">no sign-ups</p>';
+        } else {
+          signups.forEach(s => list.appendChild(makeSignupCard(s, questions)));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function deleteSignup(id) {
+      if (!confirm('Delete sign-up #' + id + '? This cannot be undone.')) return;
+      try {
+        await apiCall('DELETE', '/api/admin/waitlist/' + id);
+        setStatus('deleted sign-up #' + id);
+        loadWaitlist();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     // Check if already authenticated on page load
     fetch('/api/admin/confessions').then(res => {
       if (res.ok) showPanel();
     }).catch(() => {});
 
     setInterval(loadConfessions, 15000);
+    setInterval(loadWaitlist, 15000);
   </script>
 </body>
 </html>
