@@ -321,10 +321,12 @@ app.get('/api/admin/waitlist', adminAuth, async (req, res) => {
   }
 });
 
-// Quoted cells; only a leading = is neutralised, so @handles and +phone numbers stay intact
-function csvCell(value) {
+// Quoted cells; a leading = + - @ tab or CR gets a ' so spreadsheets don't run it as a formula,
+// except a plain @handle or +phone number in the Contact column
+function csvCell(value, isContact) {
   let text = Array.isArray(value) ? value.join('; ') : String(value ?? '');
-  if (text.startsWith('=')) text = "'" + text;
+  const plainContact = isContact && /^(@\w+|\+[\d ()-]+)$/.test(text);
+  if (/^[=+\-@\t\r]/.test(text) && !plainContact) text = "'" + text;
   return '"' + text.replace(/"/g, '""') + '"';
 }
 
@@ -344,7 +346,7 @@ app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
   ]);
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="waitlist.csv"');
-  res.send('\uFEFF' + [header, ...lines].map(row => row.map(csvCell).join(',')).join('\r\n'));
+  res.send('\uFEFF' + [header, ...lines].map(row => row.map((cell, i) => csvCell(cell, i === 1)).join(',')).join('\r\n'));
 });
 
 app.delete('/api/admin/waitlist/:id', adminAuth, async (req, res) => {
