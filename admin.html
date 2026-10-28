@@ -168,6 +168,7 @@
       margin-bottom: 0.75rem;
       white-space: pre-wrap;
       word-break: break-word;
+      overflow-wrap: anywhere;
     }
     .confession-meta {
       font-size: 0.8rem;
@@ -175,7 +176,7 @@
       margin-bottom: 0.9rem;
     }
     .card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .signup-answers { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.75rem; }
+    .signup-answers { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.75rem; overflow-wrap: anywhere; }
     .signup-answers p { padding: 0.4rem 0; border-top: 1px solid #ecebf7; }
     .signup-answers span { display: block; color: #6b6b80; font-size: 0.8rem; }
 
@@ -226,6 +227,7 @@
       </div>
       <div class="col">
         <div class="col-title">Waitlist <span class="count" id="waitlist-count"></span>
+          <button class="sm" id="refresh-btn">Refresh</button>
           <button class="sm" id="csv-btn">Download CSV</button>
         </div>
         <div class="confession-list" id="waitlist-list"></div>
@@ -319,6 +321,7 @@
       if (res.status === 401) {
         adminPanel.style.display   = 'none';
         loginOverlay.style.display = 'flex';
+        loginBtn.disabled = false;
         throw new Error('session expired');
       }
       return res;
@@ -381,6 +384,9 @@
     }
 
     // ── WAITLIST ──
+    // Sign-ups aren't polled: each load decrypts every contact, so it only runs on login, Refresh and after a delete
+    document.getElementById('refresh-btn').addEventListener('click', loadWaitlist);
+
     document.getElementById('csv-btn').addEventListener('click', () => {
       window.location.href = '/api/admin/waitlist.csv';
     });
@@ -424,6 +430,10 @@
     async function loadWaitlist() {
       try {
         const res = await apiCall('GET', '/api/admin/waitlist');
+        if (!res.ok) {
+          setStatus("Couldn't load the waitlist");
+          return;
+        }
         const { questions, signups } = await res.json();
 
         document.getElementById('waitlist-count').textContent = '(' + signups.length + ')';
@@ -444,8 +454,8 @@
     async function deleteSignup(s) {
       if (!confirm('Delete the sign-up of ' + s.contact + '? This cannot be undone.')) return;
       try {
-        await apiCall('DELETE', '/api/admin/waitlist/' + encodeURIComponent(s.id));
-        setStatus('Sign-up deleted');
+        const res = await apiCall('DELETE', '/api/admin/waitlist/' + encodeURIComponent(s.id));
+        setStatus(res.ok ? 'Sign-up deleted' : "Couldn't delete the sign-up");
         loadWaitlist();
       } catch (e) {
         console.error(e);
@@ -458,7 +468,6 @@
     }).catch(() => {});
 
     setInterval(loadConfessions, 15000);
-    setInterval(loadWaitlist, 15000);
   </script>
 </body>
 </html>
