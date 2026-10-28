@@ -125,12 +125,8 @@ app.get('/api/confessions', async (req, res) => {
 // Answer to "Where should we contact you?" and the field that holds the contact detail
 const CONTACT_QUESTION = '644rl9tj66i';
 const CONTACT_FIELDS = { Signal: '5rj5616rdvn', Telegram: '7nip27pk43v', 'E-Mail': '43ss8i8ulhr' };
-// The contact has to look like the chosen channel; it's encrypted, so mistakes would only show after the event
-const CONTACT_FORMATS = {
-  'E-Mail':   { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,           error: 'Please check your e-mail address.' },
-  'Telegram': { pattern: /^@?[A-Za-z0-9_]{5,32}$/,                 error: 'Please check your Telegram username.' },
-  'Signal':   { pattern: /^(https:\/\/)?signal\.me\/#\S+$/i,         error: 'Please paste your Signal share link (signal.me/#…).' },
-};
+// Telegram and Signal accept any form (@name, name, t.me/…, signal.me/…, phone number); e-mail needs an @ and a dot
+const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
 
 // Like page 3: only visible questions count; returns the cleaned answers or null
 function validateWaitlist(answers) {
@@ -184,7 +180,9 @@ function encryptContact(text) {
 // Same contact on the same channel always gives the same hash, so a second sign-up is skipped
 const CONTACT_HASH_KEY = crypto.createHmac('sha256', WAITLIST_KEY).update('waitlist-contact-hash').digest();
 function contactHash(channel, contact) {
-  const normalized = contact.trim().toLowerCase().replace(/^@/, '');
+  // "@Alice", "alice" and "https://t.me/alice" count as the same contact
+  const normalized = contact.trim().toLowerCase()
+    .replace(/^https?:\/\//, '').replace(/^(t|telegram|signal)\.me\//, '').replace(/^@/, '');
   return crypto.createHmac('sha256', CONTACT_HASH_KEY).update(channel + ':' + normalized).digest('hex');
 }
 
@@ -200,8 +198,8 @@ app.post('/api/waitlist', async (req, res) => {
     return res.status(400).json({ error: 'Invalid sign-up' });
   }
   const contact = answers[contactField];
-  if (!CONTACT_FORMATS[channel].pattern.test(contact)) {
-    return res.status(400).json({ error: CONTACT_FORMATS[channel].error });
+  if (channel === 'E-Mail' && !EMAIL_PATTERN.test(contact)) {
+    return res.status(400).json({ error: 'Please check your e-mail address.' });
   }
   delete answers[contactField];
   try {
