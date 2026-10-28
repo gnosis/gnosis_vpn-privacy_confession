@@ -377,14 +377,38 @@
       background: #fff;
       border-radius: 32px;
       overflow: hidden;
+      padding: 2rem 1.5rem;
+      color: #1f1f1f;
+      text-align: left;
     }
-    #waitlist-frame {
-      display: block;
+    #waitlist-form { display: flex; flex-direction: column; gap: 1.5rem; }
+    .wf-section { display: flex; flex-direction: column; gap: 1.5rem; }
+    .wf-section[hidden] { display: none; }
+    .wf-note { font-size: 0.95rem; line-height: 1.5; }
+    .wf-note p + p { margin-top: 0.75rem; }
+    .wf-q { border: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+    .wf-q legend, .wf-q > span { font-weight: 700; line-height: 1.4; margin-bottom: 0.5rem; }
+    .wf-q label.wf-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #d9d7ef;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .wf-q input[type=radio], .wf-q input[type=checkbox] { width: 20px; height: 20px; accent-color: #4336de; flex-shrink: 0; }
+    .wf-q input[type=text] {
       width: 100%;
-      height: 55vh;
-      min-height: 400px;
-      border: 0;
+      padding: 0.75rem;
+      border: 1px solid #d9d7ef;
+      border-radius: 12px;
+      font: inherit;
     }
+    .wf-q.wf-missing legend, .wf-q.wf-missing > span { color: #d0021b; }
+    .wf-q.wf-missing label.wf-opt, .wf-q.wf-missing input[type=text] { border-color: #d0021b; }
+    #wf-error { background: #fff; color: #d0021b; font-weight: 700; padding: 0.5rem 1rem; border-radius: 12px; }
     #private-view button {
       width: auto;
       padding: 0.9rem 3rem;
@@ -488,9 +512,10 @@
       <div id="private-form">
         <h2>Change your connection to privacy</h2>
         <div class="form-card">
-          <iframe id="waitlist-frame" title="Gnosis VPN waitlist form"></iframe>
+          <form id="waitlist-form" novalidate></form>
         </div>
-        <button id="done-btn">Done</button>
+        <p id="wf-error" hidden></p>
+        <button id="send-btn">Send</button>
       </div>
     </div>
   </div>
@@ -604,26 +629,165 @@
       }
     });
 
-    // Waitlist: the private web, with the CryptPad form
-    const WAITLIST_FORM_URL = 'https://cryptpad.fr/form/#/2/form/view/d-SEVRyeTki5Yfw0PDyldXhqNBD-dsn--O24vwbCcAE/';
-    const privateView   = document.getElementById('private-view');
-    const waitlistFrame = document.getElementById('waitlist-frame');
+    // Waitlist: the private web, with our own form built from waitlist-form.json
+    // (the structure exported from the CryptPad form: questions, notes and show/hide sections)
+    const privateView  = document.getElementById('private-view');
+    const waitlistForm = document.getElementById('waitlist-form');
+    const sendBtn      = document.getElementById('send-btn');
+    const wfError      = document.getElementById('wf-error');
+    let formDef = null;
+
+    fetch('/waitlist-form.json').then(r => r.json()).then(def => { formDef = def; buildWaitlistForm(); });
+
+    function escapeHtml(t) {
+      return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // The notes only use **bold** and line breaks
+    function noteHtml(text) {
+      return escapeHtml(text).split('\n\n')
+        .map(p => '<p>' + p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') + '</p>')
+        .join('');
+    }
+
+    function buildItem(id, parent) {
+      const item = formDef.form[id];
+      if (item.type === 'md') {
+        const note = document.createElement('div');
+        note.className = 'wf-note';
+        note.innerHTML = noteHtml(item.opts.text);
+        parent.appendChild(note);
+      } else if (item.type === 'section') {
+        const section = document.createElement('div');
+        section.className = 'wf-section';
+        section.dataset.id = id;
+        section.hidden = true;
+        item.opts.questions.forEach(q => buildItem(q, section));
+        parent.appendChild(section);
+      } else if (item.type === 'input') {
+        const field = document.createElement('label');
+        field.className = 'wf-q';
+        field.dataset.id = id;
+        const title = document.createElement('span');
+        title.textContent = item.q;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = id;
+        input.maxLength = 200;
+        field.append(title, input);
+        parent.appendChild(field);
+      } else {
+        const field = document.createElement('fieldset');
+        field.className = 'wf-q';
+        field.dataset.id = id;
+        if (item.opts.max) field.dataset.max = item.opts.max;
+        const legend = document.createElement('legend');
+        legend.textContent = item.q;
+        field.appendChild(legend);
+        item.opts.values.forEach(opt => {
+          const label = document.createElement('label');
+          label.className = 'wf-opt';
+          const input = document.createElement('input');
+          input.type = item.type;
+          input.name = id;
+          input.value = opt.v;
+          const text = document.createElement('span');
+          text.textContent = opt.v;
+          label.append(input, text);
+          field.appendChild(label);
+        });
+        parent.appendChild(field);
+      }
+    }
+
+    function buildWaitlistForm() {
+      waitlistForm.innerHTML = '';
+      wfError.hidden = true;
+      formDef.order.forEach(id => buildItem(id, waitlistForm));
+      updateWaitlistForm();
+    }
+
+    function isShown(el) {
+      return !el.closest('.wf-section[hidden]');
+    }
+
+    // Answer of a question as a list of values; empty when it is hidden
+    function answerOf(id) {
+      const field = waitlistForm.querySelector('.wf-q[data-id="' + id + '"]');
+      if (!field || !isShown(field)) return [];
+      return [...field.querySelectorAll('input')]
+        .filter(i => i.type === 'text' ? i.value.trim() : i.checked)
+        .map(i => i.type === 'text' ? i.value.trim() : i.value);
+    }
+
+    // A section shows when any of its "when" groups has all of its conditions met
+    function updateWaitlistForm() {
+      waitlistForm.querySelectorAll('.wf-section').forEach(section => {
+        const when = formDef.form[section.dataset.id].opts.when;
+        section.hidden = !when.some(group => group.every(c => answerOf(String(c.q)).includes(c.v)));
+      });
+      waitlistForm.querySelectorAll('.wf-q[data-max]').forEach(field => {
+        const full = field.querySelectorAll('input:checked').length >= Number(field.dataset.max);
+        field.querySelectorAll('input').forEach(i => { i.disabled = full && !i.checked; });
+      });
+    }
+
+    waitlistForm.addEventListener('change', e => {
+      e.target.closest('.wf-q').classList.remove('wf-missing');
+      updateWaitlistForm();
+    });
+    waitlistForm.addEventListener('input', e => e.target.closest('.wf-q').classList.remove('wf-missing'));
+    // Enter in a text field must not reload the page
+    waitlistForm.addEventListener('submit', e => e.preventDefault());
 
     document.getElementById('waitlist-btn').addEventListener('click', () => {
-      waitlistFrame.src = WAITLIST_FORM_URL;
+      if (formDef) buildWaitlistForm();
       privateView.style.display = 'block';
+      privateView.scrollTop = 0;
     });
 
-    document.getElementById('done-btn').addEventListener('click', () => {
-      resetToForm();
+    sendBtn.addEventListener('click', async () => {
+      const answers = {};
+      let firstMissing = null;
+      waitlistForm.querySelectorAll('.wf-q').forEach(field => {
+        field.classList.remove('wf-missing');
+        if (!isShown(field)) return;
+        const id = field.dataset.id;
+        const item = formDef.form[id];
+        const values = answerOf(id);
+        if (item.opts.required && !values.length) {
+          field.classList.add('wf-missing');
+          firstMissing = firstMissing || field;
+        }
+        if (values.length) answers[id] = item.type === 'checkbox' ? values : values[0];
+      });
+      if (firstMissing) {
+        firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      sendBtn.disabled = true;
+      wfError.hidden = true;
+      try {
+        const res = await fetch('/api/waitlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ answers })
+        });
+        if (!res.ok) throw new Error();
+        resetToForm();
+      } catch {
+        wfError.textContent = "Couldn't save your answers. Please try again.";
+        wfError.hidden = false;
+      }
+      sendBtn.disabled = false;
     });
 
     function resetToForm() {
       textarea.value = '';
       counter.textContent = '0';
       btn.disabled = false;
-      // Unload the form so the next visitor gets a fresh one
-      waitlistFrame.src = 'about:blank';
+      // Clear the form so the next visitor gets a fresh one
+      if (formDef) buildWaitlistForm();
       privateView.style.display   = 'none';
       document.getElementById('waitlist-signup').style.opacity = '0';
       document.getElementById('confirm-cta').style.opacity = '0';
