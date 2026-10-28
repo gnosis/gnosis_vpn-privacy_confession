@@ -34,7 +34,6 @@ async function initDb() {
     CREATE TABLE IF NOT EXISTS waitlist (
       id              TEXT    PRIMARY KEY,
       answers         JSONB   NOT NULL,
-      contact_channel TEXT    NOT NULL,
       contact_enc     TEXT    NOT NULL,
       contact_hash    TEXT    NOT NULL UNIQUE,
       submitted_on    DATE    NOT NULL DEFAULT CURRENT_DATE
@@ -133,9 +132,7 @@ const CONTACT_FORMATS = {
   'Signal':   { pattern: /^(https:\/\/)?signal\.me\/#\S+$/i,         error: 'Please paste your Signal share link (signal.me/#…).' },
 };
 
-// Checks the answers against waitlist-form.json the same way page 3 shows the form:
-// only questions that are visible count, required ones must be answered.
-// Returns the cleaned answers, or null if anything is missing or invalid.
+// Like page 3: only visible questions count; returns the cleaned answers or null
 function validateWaitlist(answers) {
   if (!answers || typeof answers !== 'object' || Array.isArray(answers)) return null;
   const clean = {};
@@ -210,9 +207,9 @@ app.post('/api/waitlist', async (req, res) => {
   try {
     // A repeat sign-up still gets ok, so the form doesn't reveal who is already on the list
     await pool.query(
-      `INSERT INTO waitlist (id, answers, contact_channel, contact_enc, contact_hash)
-       VALUES ($1, $2, $3, $4, $5) ON CONFLICT (contact_hash) DO NOTHING`,
-      [crypto.randomUUID(), answers, channel, encryptContact(contact), contactHash(channel, contact)]
+      `INSERT INTO waitlist (id, answers, contact_enc, contact_hash)
+       VALUES ($1, $2, $3, $4) ON CONFLICT (contact_hash) DO NOTHING`,
+      [crypto.randomUUID(), answers, encryptContact(contact), contactHash(channel, contact)]
     );
     res.json({ ok: true });
   } catch (e) {
