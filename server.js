@@ -268,8 +268,7 @@ app.get('/api/admin/download', adminAuth, async (req, res) => {
   res.json({ confessions: confessions.rows });
 });
 
-// Answerable questions in form order, with a label that makes sense on its own:
-// "Please specify" / "Which one?" get the question that opened them in front.
+// Questions for admin and CSV, labelled so "Please specify" says what it belongs to
 const waitlistQuestions = [];
 // Drops the "(If you're not sure, … run one of these commands …)" hint from version questions
 const shortLabel = q => q.replace(/\s*\(If you.*$/, '');
@@ -277,10 +276,13 @@ const shortLabel = q => q.replace(/\s*\(If you.*$/, '');
   ids.forEach(id => {
     const item = waitlistForm.form[id];
     if (item.type === 'section') {
-      const group = item.opts.when[0];
-      return collect(item.opts.questions, shortLabel(waitlistForm.form[group[group.length - 1].q].q));
+      const last = (item.opts.when?.[0] || []).at(-1);
+      const opener = last && waitlistForm.form[last.q];
+      return collect(item.opts.questions || [], opener ? shortLabel(opener.q) : null);
     }
+    // Skips notes, the contact (own columns) and the consent question, whose only answer is "I understand"
     if (item.type === 'md' || id === CONTACT_QUESTION || Object.values(CONTACT_FIELDS).includes(id)) return;
+    if (item.type === 'radio' && item.opts.values.length === 1) return;
     if (waitlistQuestions.some(q => q.id === id)) return;
     const text = shortLabel(item.q);
     waitlistQuestions.push({ id, label: item.type === 'input' && openedBy ? openedBy + ' — ' + text : text });
