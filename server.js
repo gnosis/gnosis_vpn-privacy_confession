@@ -71,8 +71,9 @@ function adminAuth(req, res, next) {
   const token = getCookie(req, 'admin_token') || '';
   const expires = Number(token.split('.')[0]);
   const expected = Buffer.from(adminToken(expires));
+  const given = Buffer.from(token);
   const valid = ADMIN_PW && expires > Date.now() / 1000 &&
-    expected.length === token.length && crypto.timingSafeEqual(expected, Buffer.from(token));
+    expected.length === given.length && crypto.timingSafeEqual(expected, given);
   if (valid) return next();
   res.status(401).json({ error: 'Unauthorized' });
 }
