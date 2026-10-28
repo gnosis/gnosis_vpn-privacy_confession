@@ -253,6 +253,9 @@ app.get('/api/admin/download', adminAuth, async (req, res) => {
 if (!ADMIN_PW) {
   console.error('WARNING: ADMIN_PASSWORD env var is not set.');
 }
+if (WAITLIST_KEY.length !== 32) {
+  console.error('WARNING: WAITLIST_KEY env var is missing or not 32 bytes of base64 (use openssl rand -base64 32). Waitlist sign-ups will be refused.');
+}
 
 // Local dev: listen directly. Vercel imports this file and uses module.exports.
 if (require.main === module) {
