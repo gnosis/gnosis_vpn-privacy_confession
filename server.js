@@ -302,7 +302,12 @@ async function loadSignups() {
 }
 
 app.get('/api/admin/waitlist', adminAuth, async (req, res) => {
-  res.json({ questions: waitlistQuestions, signups: await loadSignups() });
+  try {
+    res.json({ questions: waitlistQuestions, signups: await loadSignups() });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Quoted cells; a leading = + - @ is neutralised so spreadsheets don't run it as a formula
@@ -313,7 +318,13 @@ function csvCell(value) {
 }
 
 app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
-  const signups = await loadSignups();
+  let signups;
+  try {
+    signups = await loadSignups();
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Server error' });
+  }
   const header = ['Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
   const lines = signups.map(s => [
     s.contact_channel,
@@ -326,11 +337,19 @@ app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
 });
 
 app.delete('/api/admin/waitlist/:id', adminAuth, async (req, res) => {
-  const { rowCount } = await pool.query(
-    'DELETE FROM waitlist WHERE id = $1', [req.params.id]
-  );
-  if (!rowCount) return res.status(404).json({ error: 'Not found' });
-  res.json({ ok: true });
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid id' });
+  }
+  try {
+    const { rowCount } = await pool.query(
+      'DELETE FROM waitlist WHERE id = $1', [req.params.id]
+    );
+    if (!rowCount) return res.status(404).json({ error: 'Not found' });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 if (!ADMIN_PW) {
