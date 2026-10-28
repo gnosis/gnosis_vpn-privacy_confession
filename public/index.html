@@ -773,8 +773,14 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ answers })
         });
-        if (!res.ok) throw new Error();
-        resetToForm();
+        if (res.ok) {
+          resetToForm();
+        } else {
+          // e.g. "Please check your e-mail address." when the contact doesn't fit the channel
+          const body = await res.json().catch(() => ({}));
+          wfError.textContent = res.status === 400 && body.error ? body.error : "Couldn't save your answers. Please try again.";
+          wfError.hidden = false;
+        }
       } catch {
         wfError.textContent = "Couldn't save your answers. Please try again.";
         wfError.hidden = false;
