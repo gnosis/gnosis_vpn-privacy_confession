@@ -126,6 +126,12 @@ app.get('/api/confessions', async (req, res) => {
 // Answer to "Where should we contact you?" and the field that holds the contact detail
 const CONTACT_QUESTION = '644rl9tj66i';
 const CONTACT_FIELDS = { Signal: '5rj5616rdvn', Telegram: '7nip27pk43v', 'E-Mail': '43ss8i8ulhr' };
+// The contact has to look like the chosen channel; it's encrypted, so mistakes would only show after the event
+const CONTACT_FORMATS = {
+  'E-Mail':   { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,           error: 'Please check your e-mail address.' },
+  'Telegram': { pattern: /^@?[A-Za-z0-9_]{5,32}$/,                 error: 'Please check your Telegram username.' },
+  'Signal':   { pattern: /^(https:\/\/)?signal\.me\/#\S+$/i,         error: 'Please paste your Signal share link (signal.me/#…).' },
+};
 
 // Checks the answers against waitlist-form.json the same way page 3 shows the form:
 // only questions that are visible count, required ones must be answered.
@@ -196,6 +202,9 @@ app.post('/api/waitlist', async (req, res) => {
     return res.status(400).json({ error: 'Invalid sign-up' });
   }
   const contact = answers[contactField];
+  if (!CONTACT_FORMATS[channel].pattern.test(contact)) {
+    return res.status(400).json({ error: CONTACT_FORMATS[channel].error });
+  }
   delete answers[contactField];
   try {
     // A repeat sign-up still gets ok, so the form doesn't reveal who is already on the list
