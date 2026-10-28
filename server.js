@@ -55,9 +55,10 @@ app.use(async (req, res, next) => {
 
 // ── Admin auth ──────────────────────────────────────────────────────────────
 // Token is derived from the password so any serverless instance can validate it
-// without needing shared in-memory state.
-function adminToken() {
-  return crypto.createHmac('sha256', ADMIN_PW || '').update('admin-session').digest('hex');
+// without needing shared in-memory state. It carries its expiry, so a copied cookie stops working.
+const ADMIN_SESSION_SECONDS = 8 * 60 * 60;
+function adminToken(expires) {
+  return expires + '.' + crypto.createHmac('sha256', ADMIN_PW || '').update('admin-session:' + expires).digest('hex');
 }
 
 function getCookie(req, name) {
@@ -67,7 +68,13 @@ function getCookie(req, name) {
 }
 
 function adminAuth(req, res, next) {
-  if (ADMIN_PW && getCookie(req, 'admin_token') === adminToken()) return next();
+  const token = getCookie(req, 'admin_token') || '';
+  const expires = Number(token.split('.')[0]);
+  const expected = Buffer.from(adminToken(expires));
+  const given = Buffer.from(token);
+  const valid = ADMIN_PW && expires > Date.now() / 1000 &&
+    expected.length === given.length && crypto.timingSafeEqual(expected, given);
+  if (valid) return next();
   res.status(401).json({ error: 'Unauthorized' });
 }
 
@@ -221,11 +228,16 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   if (!ADMIN_PW || (req.body.password || '') !== ADMIN_PW) {
+    // Slows down password guessing
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return res.status(401).json({ error: 'Wrong password' });
   }
-  res.setHeader('Set-Cookie', `admin_token=${adminToken()}; HttpOnly; Path=/; SameSite=Strict`);
+  const expires = Math.floor(Date.now() / 1000) + ADMIN_SESSION_SECONDS;
+  const secure = req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '';
+  res.setHeader('Set-Cookie',
+    `admin_token=${adminToken(expires)}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${ADMIN_SESSION_SECONDS}${secure}`);
   res.json({ ok: true });
 });
 
@@ -253,6 +265,105 @@ app.get('/api/admin/download', adminAuth, async (req, res) => {
   const confessions = await pool.query('SELECT * FROM confessions ORDER BY id');
   res.setHeader('Content-Disposition', 'attachment; filename="confessions.json"');
   res.json({ confessions: confessions.rows });
+});
+
+// Questions for admin and CSV, labelled so "Please specify" says what it belongs to
+const waitlistQuestions = [];
+// Drops the "(If you're not sure, …)" / "(if you're unsure, …)" hints from version and chip questions
+const shortLabel = q => q.replace(/\s*\(if you[^)]*\)/i, '');
+(function collect(ids, openedBy) {
+  ids.forEach(id => {
+    const item = waitlistForm.form[id];
+    if (item.type === 'section') {
+      const last = (item.opts.when?.[0] || []).at(-1);
+      const opener = last && waitlistForm.form[last.q];
+      return collect(item.opts.questions || [], opener ? shortLabel(opener.q) : null);
+    }
+    // Skips notes, the contact (own columns) and the consent question, whose only answer is "I understand"
+    if (item.type === 'md' || id === CONTACT_QUESTION || Object.values(CONTACT_FIELDS).includes(id)) return;
+    if (item.type === 'radio' && item.opts.values.length === 1) return;
+    if (waitlistQuestions.some(q => q.id === id)) return;
+    const text = shortLabel(item.q);
+    waitlistQuestions.push({ id, label: item.type === 'input' && openedBy ? openedBy + ' — ' + text : text });
+  });
+})(waitlistForm.order, null);
+
+function decryptContact(stored) {
+  try {
+    const [iv, tag, enc] = stored.split('.').map(p => Buffer.from(p, 'base64'));
+    const decipher = crypto.createDecipheriv('aes-256-gcm', WAITLIST_KEY, iv);
+    decipher.setAuthTag(tag);
+    return Buffer.concat([decipher.update(enc), decipher.final()]).toString('utf8');
+  } catch {
+    return '(cannot decrypt)';
+  }
+}
+
+// Newest day first; within a day the random id decides, so the list doesn't show the sign-up order
+async function loadSignups() {
+  const { rows } = await pool.query(
+    "SELECT id, answers, contact_enc, to_char(submitted_on, 'YYYY-MM-DD') AS sent_on FROM waitlist ORDER BY submitted_on DESC, id"
+  );
+  return rows.map(r => ({
+    id: r.id,
+    sent_on: r.sent_on,
+    contact_channel: r.answers[CONTACT_QUESTION],
+    contact: decryptContact(r.contact_enc),
+    answers: r.answers,
+  }));
+}
+
+app.get('/api/admin/waitlist', adminAuth, async (req, res) => {
+  try {
+    res.json({ questions: waitlistQuestions, signups: await loadSignups() });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Quoted cells; a leading = + - @ tab or CR gets a ' so spreadsheets don't run it as a formula,
+// except a plain @handle or +phone number in the Contact column
+function csvCell(value, isContact) {
+  let text = Array.isArray(value) ? value.join('; ') : String(value ?? '');
+  const plainContact = isContact && /^(@\w+|\+[\d ()-]+)$/.test(text);
+  if (/^[=+\-@\t\r]/.test(text) && !plainContact) text = "'" + text;
+  return '"' + text.replace(/"/g, '""') + '"';
+}
+
+app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
+  let signups;
+  try {
+    signups = await loadSignups();
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ error: 'Server error' });
+  }
+  const header = ['Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
+  const lines = signups.map(s => [
+    s.contact_channel,
+    s.contact,
+    ...waitlistQuestions.map(q => s.answers[q.id]),
+  ]);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="waitlist.csv"');
+  res.send('\uFEFF' + [header, ...lines].map(row => row.map((cell, i) => csvCell(cell, i === 1)).join(',')).join('\r\n'));
+});
+
+app.delete('/api/admin/waitlist/:id', adminAuth, async (req, res) => {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(req.params.id)) {
+    return res.status(400).json({ error: 'Invalid id' });
+  }
+  try {
+    const { rowCount } = await pool.query(
+      'DELETE FROM waitlist WHERE id = $1', [req.params.id]
+    );
+    if (!rowCount) return res.status(404).json({ error: 'Not found' });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 if (!ADMIN_PW) {
