@@ -29,12 +29,14 @@ async function initDb() {
       email        TEXT    UNIQUE NOT NULL,
       submitted_at INTEGER NOT NULL
     );
+    -- No timestamp and a random id: the order of sign-ups must not be linkable
+    -- to the public confession times (the waitlist button appears right after confessing)
     CREATE TABLE IF NOT EXISTS waitlist (
-      id              SERIAL  PRIMARY KEY,
+      id              TEXT    PRIMARY KEY,
       answers         JSONB   NOT NULL,
-      contact_channel TEXT    NOT NULL,
       contact_enc     TEXT    NOT NULL,
-      submitted_at    INTEGER NOT NULL
+      contact_hash    TEXT    NOT NULL UNIQUE,
+      submitted_on    DATE    NOT NULL DEFAULT CURRENT_DATE
     );
   `);
 }
@@ -123,10 +125,14 @@ app.get('/api/confessions', async (req, res) => {
 // Answer to "Where should we contact you?" and the field that holds the contact detail
 const CONTACT_QUESTION = '644rl9tj66i';
 const CONTACT_FIELDS = { Signal: '5rj5616rdvn', Telegram: '7nip27pk43v', 'E-Mail': '43ss8i8ulhr' };
+// The contact has to look like the chosen channel; it's encrypted, so mistakes would only show after the event
+const CONTACT_FORMATS = {
+  'E-Mail':   { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,           error: 'Please check your e-mail address.' },
+  'Telegram': { pattern: /^@?[A-Za-z0-9_]{5,32}$/,                 error: 'Please check your Telegram username.' },
+  'Signal':   { pattern: /^(https:\/\/)?signal\.me\/#\S+$/i,         error: 'Please paste your Signal share link (signal.me/#…).' },
+};
 
-// Checks the answers against waitlist-form.json the same way page 3 shows the form:
-// only questions that are visible count, required ones must be answered.
-// Returns the cleaned answers, or null if anything is missing or invalid.
+// Like page 3: only visible questions count; returns the cleaned answers or null
 function validateWaitlist(answers) {
   if (!answers || typeof answers !== 'object' || Array.isArray(answers)) return null;
   const clean = {};
@@ -149,7 +155,8 @@ function validateWaitlist(answers) {
     let value;
     if (item.type === 'input') {
       value = typeof given === 'string' ? given.trim() : '';
-      if (value.length > 200) valid = false;
+      // Postgres JSONB can't store \u0000
+      if (value.length > 200 || value.includes('\u0000')) valid = false;
     } else if (item.type === 'radio') {
       value = options.includes(given) ? given : '';
       if (given !== undefined && !value) valid = false;
@@ -174,6 +181,13 @@ function encryptContact(text) {
   return [iv, cipher.getAuthTag(), enc].map(b => b.toString('base64')).join('.');
 }
 
+// Same contact on the same channel always gives the same hash, so a second sign-up is skipped
+const CONTACT_HASH_KEY = crypto.createHmac('sha256', WAITLIST_KEY).update('waitlist-contact-hash').digest();
+function contactHash(channel, contact) {
+  const normalized = contact.trim().toLowerCase().replace(/^@/, '');
+  return crypto.createHmac('sha256', CONTACT_HASH_KEY).update(channel + ':' + normalized).digest('hex');
+}
+
 app.post('/api/waitlist', async (req, res) => {
   if (WAITLIST_KEY.length !== 32) {
     console.error('WAITLIST_KEY env var is missing or not 32 bytes.');
@@ -186,19 +200,16 @@ app.post('/api/waitlist', async (req, res) => {
     return res.status(400).json({ error: 'Invalid sign-up' });
   }
   const contact = answers[contactField];
+  if (!CONTACT_FORMATS[channel].pattern.test(contact)) {
+    return res.status(400).json({ error: CONTACT_FORMATS[channel].error });
+  }
   delete answers[contactField];
-  const now = Math.floor(Date.now() / 1000);
   try {
-    // Global rate limit: reject if another sign-up came in within 5 seconds
-    const { rows } = await pool.query(
-      'SELECT submitted_at FROM waitlist ORDER BY submitted_at DESC LIMIT 1'
-    );
-    if (rows.length && now - rows[0].submitted_at < 5) {
-      return res.status(429).json({ error: 'Too many sign-ups. Please wait a moment.' });
-    }
+    // A repeat sign-up still gets ok, so the form doesn't reveal who is already on the list
     await pool.query(
-      'INSERT INTO waitlist (answers, contact_channel, contact_enc, submitted_at) VALUES ($1, $2, $3, $4)',
-      [answers, channel, encryptContact(contact), now]
+      `INSERT INTO waitlist (id, answers, contact_enc, contact_hash)
+       VALUES ($1, $2, $3, $4) ON CONFLICT (contact_hash) DO NOTHING`,
+      [crypto.randomUUID(), answers, encryptContact(contact), contactHash(channel, contact)]
     );
     res.json({ ok: true });
   } catch (e) {
@@ -324,6 +335,26 @@ app.delete('/api/admin/waitlist/:id', adminAuth, async (req, res) => {
 
 if (!ADMIN_PW) {
   console.error('WARNING: ADMIN_PASSWORD env var is not set.');
+}
+if (WAITLIST_KEY.length !== 32) {
+  console.error('WARNING: WAITLIST_KEY env var is missing or not 32 bytes of base64 (use openssl rand -base64 32). Waitlist sign-ups will be refused.');
+}
+// The ids above come from the CryptPad export; a new export changes them, so say so at startup
+{
+  const problems = [];
+  const channels = (waitlistForm.form[CONTACT_QUESTION]?.opts?.values || []).map(o => o.v);
+  for (const [channel, id] of Object.entries(CONTACT_FIELDS)) {
+    if (!channels.includes(channel)) problems.push(`"${channel}" is not an option of ${CONTACT_QUESTION}`);
+    if (waitlistForm.form[id]?.type !== 'input') problems.push(`contact field ${id} is missing`);
+  }
+  for (const [id, item] of Object.entries(waitlistForm.form)) {
+    const rulesOk = item.type !== 'section' || (Array.isArray(item.opts.when) &&
+      item.opts.when.every(group => group.every(c => c.is === 1 && waitlistForm.form[c.q])));
+    if (!rulesOk) problems.push(`section ${id} uses show/hide rules the server doesn't handle`);
+  }
+  if (problems.length) {
+    console.error('WARNING: waitlist-form.json does not match server.js, sign-ups will fail: ' + problems.join('; '));
+  }
 }
 
 // Local dev: listen directly. Vercel imports this file and uses module.exports.
