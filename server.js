@@ -55,9 +55,10 @@ app.use(async (req, res, next) => {
 
 // ── Admin auth ──────────────────────────────────────────────────────────────
 // Token is derived from the password so any serverless instance can validate it
-// without needing shared in-memory state.
-function adminToken() {
-  return crypto.createHmac('sha256', ADMIN_PW || '').update('admin-session').digest('hex');
+// without needing shared in-memory state. It carries its expiry, so a copied cookie stops working.
+const ADMIN_SESSION_SECONDS = 8 * 60 * 60;
+function adminToken(expires) {
+  return expires + '.' + crypto.createHmac('sha256', ADMIN_PW || '').update('admin-session:' + expires).digest('hex');
 }
 
 function getCookie(req, name) {
@@ -67,7 +68,12 @@ function getCookie(req, name) {
 }
 
 function adminAuth(req, res, next) {
-  if (ADMIN_PW && getCookie(req, 'admin_token') === adminToken()) return next();
+  const token = getCookie(req, 'admin_token') || '';
+  const expires = Number(token.split('.')[0]);
+  const expected = Buffer.from(adminToken(expires));
+  const valid = ADMIN_PW && expires > Date.now() / 1000 &&
+    expected.length === token.length && crypto.timingSafeEqual(expected, Buffer.from(token));
+  if (valid) return next();
   res.status(401).json({ error: 'Unauthorized' });
 }
 
@@ -223,11 +229,16 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-app.post('/api/admin/login', (req, res) => {
+app.post('/api/admin/login', async (req, res) => {
   if (!ADMIN_PW || (req.body.password || '') !== ADMIN_PW) {
+    // Slows down password guessing
+    await new Promise(resolve => setTimeout(resolve, 1000));
     return res.status(401).json({ error: 'Wrong password' });
   }
-  res.setHeader('Set-Cookie', `admin_token=${adminToken()}; HttpOnly; Path=/; SameSite=Strict`);
+  const expires = Math.floor(Date.now() / 1000) + ADMIN_SESSION_SECONDS;
+  const secure = req.secure || req.headers['x-forwarded-proto'] === 'https' ? '; Secure' : '';
+  res.setHeader('Set-Cookie',
+    `admin_token=${adminToken(expires)}; HttpOnly; Path=/; SameSite=Strict; Max-Age=${ADMIN_SESSION_SECONDS}${secure}`);
   res.json({ ok: true });
 });
 
