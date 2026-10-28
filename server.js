@@ -7,6 +7,9 @@ const { Pool } = require('pg');
 const app    = express();
 const PORT   = process.env.PORT || 3000;
 const ADMIN_PW = process.env.ADMIN_PASSWORD;
+// 32-byte key (base64) for the waitlist contact details; without it sign-ups are refused
+const WAITLIST_KEY = Buffer.from(process.env.WAITLIST_KEY || '', 'base64');
+const waitlistForm = require('./public/waitlist-form.json');
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -25,6 +28,13 @@ async function initDb() {
       id           SERIAL  PRIMARY KEY,
       email        TEXT    UNIQUE NOT NULL,
       submitted_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS waitlist (
+      id              SERIAL  PRIMARY KEY,
+      answers         JSONB   NOT NULL,
+      contact_channel TEXT    NOT NULL,
+      contact_enc     TEXT    NOT NULL,
+      submitted_at    INTEGER NOT NULL
     );
   `);
 }
@@ -103,6 +113,94 @@ app.get('/api/confessions', async (req, res) => {
       'SELECT id, text, submitted_at FROM confessions ORDER BY submitted_at DESC'
     );
     res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ── Waitlist ─────────────────────────────────────────────────────────────────
+// Answer to "Where should we contact you?" and the field that holds the contact detail
+const CONTACT_QUESTION = '644rl9tj66i';
+const CONTACT_FIELDS = { Signal: '5rj5616rdvn', Telegram: '7nip27pk43v', 'E-Mail': '43ss8i8ulhr' };
+
+// Checks the answers against waitlist-form.json the same way page 3 shows the form:
+// only questions that are visible count, required ones must be answered.
+// Returns the cleaned answers, or null if anything is missing or invalid.
+function validateWaitlist(answers) {
+  if (!answers || typeof answers !== 'object' || Array.isArray(answers)) return null;
+  const clean = {};
+  const valuesOf = id => {
+    const v = clean[id];
+    return v === undefined ? [] : [].concat(v);
+  };
+  let valid = true;
+
+  function visit(id) {
+    const item = waitlistForm.form[id];
+    if (item.type === 'md') return;
+    if (item.type === 'section') {
+      const shown = item.opts.when.some(group => group.every(c => valuesOf(String(c.q)).includes(c.v)));
+      if (shown) item.opts.questions.forEach(visit);
+      return;
+    }
+    const given = answers[id];
+    const options = (item.opts.values || []).map(o => o.v);
+    let value;
+    if (item.type === 'input') {
+      value = typeof given === 'string' ? given.trim() : '';
+      if (value.length > 200) valid = false;
+    } else if (item.type === 'radio') {
+      value = options.includes(given) ? given : '';
+      if (given !== undefined && !value) valid = false;
+    } else {
+      value = Array.isArray(given) ? [...new Set(given)] : [];
+      if (given !== undefined && !Array.isArray(given)) valid = false;
+      if (value.some(v => !options.includes(v)) || (item.opts.max && value.length > item.opts.max)) valid = false;
+    }
+    const empty = Array.isArray(value) ? !value.length : !value;
+    if (empty && item.opts.required) valid = false;
+    if (!empty) clean[id] = value;
+  }
+
+  waitlistForm.order.forEach(visit);
+  return valid ? clean : null;
+}
+
+function encryptContact(text) {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', WAITLIST_KEY, iv);
+  const enc = Buffer.concat([cipher.update(text, 'utf8'), cipher.final()]);
+  return [iv, cipher.getAuthTag(), enc].map(b => b.toString('base64')).join('.');
+}
+
+app.post('/api/waitlist', async (req, res) => {
+  if (WAITLIST_KEY.length !== 32) {
+    console.error('WAITLIST_KEY env var is missing or not 32 bytes.');
+    return res.status(503).json({ error: 'Waitlist unavailable' });
+  }
+  const answers = validateWaitlist(req.body.answers);
+  const channel = answers && answers[CONTACT_QUESTION];
+  const contactField = CONTACT_FIELDS[channel];
+  if (!contactField || !answers[contactField]) {
+    return res.status(400).json({ error: 'Invalid sign-up' });
+  }
+  const contact = answers[contactField];
+  delete answers[contactField];
+  const now = Math.floor(Date.now() / 1000);
+  try {
+    // Global rate limit: reject if another sign-up came in within 5 seconds
+    const { rows } = await pool.query(
+      'SELECT submitted_at FROM waitlist ORDER BY submitted_at DESC LIMIT 1'
+    );
+    if (rows.length && now - rows[0].submitted_at < 5) {
+      return res.status(429).json({ error: 'Too many sign-ups. Please wait a moment.' });
+    }
+    await pool.query(
+      'INSERT INTO waitlist (answers, contact_channel, contact_enc, submitted_at) VALUES ($1, $2, $3, $4)',
+      [answers, channel, encryptContact(contact), now]
+    );
+    res.json({ ok: true });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });

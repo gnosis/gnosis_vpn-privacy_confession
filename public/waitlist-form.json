@@ -1,0 +1,1597 @@
+{
+  "form": {
+    "1": {
+      "opts": {
+        "text": "Gnosis VPN is designed for those who care about privacy, resilience, and true decentralization. By filling out this form you're joining the waitlist for early access on November 16th. \n\nWe only collect the minimum information needed to contact you.\n\nNo spam. No tracking. Just privacy, as it should be."
+      },
+      "type": "md"
+    },
+    "2": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "I understand"
+          }
+        ]
+      },
+      "q": "I understand my information will only be used for Gnosis VPN early access communication.",
+      "type": "radio"
+    },
+    "0gvn3a79l3o": {
+      "opts": {
+        "questions": [
+          "mh6htu7z78k"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "ug7yrquvv0i",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "xsujgu3ieg6",
+              "v": "Manjaro"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "12fosppso60": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Leap 15.4"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Leap 15.5"
+          },
+          {
+            "uid": "q5j3sf7rje",
+            "v": "Tumbleweed (rolling)"
+          },
+          {
+            "uid": "323a7h7dgl2",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which OpenSUSE version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "136dq8ukgej": {
+      "opts": {
+        "text": "Thank you! Once you are selected for onboarding, we will be in touch via e-mail with your access details. The message will come from **support@gnosisvpn.com**.\n\nPlease be aware of scammers. We will never contact you from any other e-mail address or ask for private keys, seed phrases, or payments."
+      },
+      "type": "md"
+    },
+    "16gbm459iq7": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "17tmkfcs7t4": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Yes"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "No"
+          }
+        ]
+      },
+      "q": "Do you already use a VPN?",
+      "type": "radio"
+    },
+    "1i056bdc42n": {
+      "opts": {
+        "questions": [
+          "7nip27pk43v",
+          "441bhfj2tpf"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "644rl9tj66i",
+              "uid": "6efb6qdns01",
+              "v": "Telegram"
+            },
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "6uj7jj71to5",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "1kig1p0oj1": {
+      "opts": {
+        "questions": [
+          "ppbk8o54k4"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "3mi7oa812m5",
+              "uid": "1qlgge16utg",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "1siaqfs5wth": {
+      "opts": {
+        "questions": [
+          "azg88w4hr0a"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "lxn0orlspur",
+              "v": "Mac computer"
+            },
+            {
+              "is": 1,
+              "q": "2fs2iq15jpn",
+              "uid": "4kawwwxr4pk",
+              "v": "I'm not sure"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "1tqi110vkqa": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "18.04 LTS"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "20.04 LTS"
+          },
+          {
+            "uid": "7ckd5ne6fro",
+            "v": "22.04 LTS"
+          },
+          {
+            "uid": "53dl6hof3s2",
+            "v": "24.04 LTS"
+          },
+          {
+            "uid": "1uim99f0kgp",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Ubuntu version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "1uhap0sqc96": {
+      "opts": {
+        "questions": [
+          "cq5c66t823"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "30ai4r6tunt",
+              "v": "Linux computer"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "27227vlrl1k": {
+      "opts": {
+        "questions": [
+          "tro5h5uk1wy"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "g2jhx9tktzx",
+              "v": "Mac computer"
+            },
+            {
+              "is": 1,
+              "q": "2fs2iq15jpn",
+              "uid": "243oqtapgyy",
+              "v": "Processor: Intel"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "2bh13eb6o3t": {
+      "opts": {
+        "max": 3,
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Mac computer"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Windows computer"
+          },
+          {
+            "uid": "573qfagch9b",
+            "v": "Linux computer"
+          },
+          {
+            "uid": "3qskhbfqhfi",
+            "v": "iPhone / iPad"
+          },
+          {
+            "uid": "522po9gh7jl",
+            "v": "Android phone / Tablet"
+          },
+          {
+            "uid": "7mit16pu5if",
+            "v": "GrapheneOS Phone / Tablet"
+          },
+          {
+            "uid": "tm4b7776h8",
+            "v": "Other (please specify)"
+          }
+        ]
+      },
+      "q": "What devices can you run Gnosis VPN on?",
+      "type": "checkbox"
+    },
+    "2d3vnve0lmr": {
+      "opts": {
+        "questions": [
+          "3mi7oa812m5"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "4vdfnk02j8j",
+              "v": "Pop!_OS"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "2fs2iq15jpn": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "4dbpbcg4i9p",
+            "v": "Chip: Apple M1, M2, M3, M4 (or similar)"
+          },
+          {
+            "uid": "2n9m059hi4u",
+            "v": "Processor: Intel"
+          },
+          {
+            "uid": "58oiv2uunt6",
+            "v": "I'm not sure"
+          }
+        ]
+      },
+      "q": "What chip does your Mac have (if you're unsure, open the Apple Menu at the top left of your screen and select About This Mac)?",
+      "type": "radio"
+    },
+    "2s2a7v4r6g6": {
+      "opts": {
+        "questions": [
+          "54ghjartlhs"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "6sqd7m6d2la",
+              "v": "Other (please specify)"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "2tkn35cgm3a": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "macOS 26 (Tahoe)"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "macOS 15 (Sequoia)"
+          },
+          {
+            "uid": "7ar8799mqfb",
+            "v": "macOS 14 (Sonoma)"
+          },
+          {
+            "uid": "284edu2l198",
+            "v": "macOS 13 (Ventura)"
+          },
+          {
+            "uid": "1bek12qbatf",
+            "v": "macOS 12 (Monterey)"
+          },
+          {
+            "uid": "1pcvjl45bib",
+            "v": "macOS 11 (Big Sur)"
+          },
+          {
+            "uid": "6mueb7g7t1v",
+            "v": "macOS 10.15 (Catalina)"
+          },
+          {
+            "uid": "5gblv801vgq",
+            "v": "macOS 10.14 or older (Mojave / High Sierra / older)"
+          }
+        ]
+      },
+      "q": "Which macOS version are you using?",
+      "type": "radio"
+    },
+    "2uxzo2oyxz0": {
+      "opts": {
+        "text": "**We're working on Windows support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "33p4nsu7369": {
+      "opts": {
+        "questions": [
+          "5rj5616rdvn",
+          "beqtn4bnnt"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "644rl9tj66i",
+              "uid": "4m3ke6ttatg",
+              "v": "Signal"
+            },
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "1cpi599dpl3",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "3dbq9p3qqtu": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Which one?",
+      "type": "input"
+    },
+    "3kqcvd01up7": {
+      "opts": {
+        "questions": [
+          "bfnl2bzz3ow"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "g6b9epd2b7y",
+              "v": "iPhone / iPad"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "3m8ytop4th5": {
+      "opts": {
+        "text": "**Debian is supported. You will get early access on November 16.**"
+      },
+      "type": "md"
+    },
+    "3mi7oa812m5": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "20.04 LTS"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "22.04 LTS"
+          },
+          {
+            "uid": "6ekdnjis9r9",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Pop!_OS version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "3npnq3q9eit": {
+      "opts": {
+        "questions": [
+          "5v3p01n631"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "1lkog1qik8l",
+              "v": "Manjaro"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "3psruucyime": {
+      "opts": {
+        "questions": [
+          "rwmn4exj58e"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "29egd8hie2p",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "6h2o387mujx",
+              "v": "Pop!_OS"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "3q3sk7bv3o1": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Windows 11 (24H2 or newer)"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Windows 11 (23H2 / 22H2)"
+          },
+          {
+            "uid": "11s0k6c3mf0",
+            "v": "Windows 11 (older than 22H2)"
+          },
+          {
+            "uid": "6l3vsvjco1h",
+            "v": "Windows 10 (22H2)"
+          },
+          {
+            "uid": "1i5trt6a0p6",
+            "v": "Windows 10 (21H2 or older)"
+          },
+          {
+            "uid": "43ojnkg49ej",
+            "v": "Windows 8.1"
+          }
+        ]
+      },
+      "q": "Which Windows version are you using?",
+      "type": "radio"
+    },
+    "43ss8i8ulhr": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Share your Email address",
+      "type": "input"
+    },
+    "441bhfj2tpf": {
+      "opts": {
+        "text": "Thank you! Once you are selected for onboarding, we will be in touch via Telegram with your access details. The message will come from **@GnosisVPN_Support**.\n\nPlease be aware of scammers. We will never contact you from any other handle or ask for private keys, seed phrases, or payments."
+      },
+      "type": "md"
+    },
+    "478ucat9jme": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "4atrdapkiip": {
+      "opts": {
+        "questions": [
+          "2fs2iq15jpn",
+          "2tkn35cgm3a"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "7o1j28ibfmb",
+              "v": "Mac computer"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "4nb9gni4811": {
+      "opts": {
+        "questions": [
+          "5c5uhnmva6k"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "56c0u9c1fhv",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "4rifcujvuso": {
+      "opts": {
+        "questions": [
+          "50n9oennlcj"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "5fk0s83293c",
+              "uid": "3v26h7vkn60",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "4tivptra5bj": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "I already use privacy tools (VPNs, Tor, private messengers, etc.)"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "I’m transitioning toward more privacy-respecting tools"
+          },
+          {
+            "uid": "7demed4j039",
+            "v": "I’m curious but still new to privacy topics"
+          },
+          {
+            "uid": "1082gf0k5vj",
+            "v": "I mostly just want a VPN that works"
+          }
+        ]
+      },
+      "q": "Which statement best describes you?",
+      "type": "radio"
+    },
+    "50n9oennlcj": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "532h37so56h": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "54ghjartlhs": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "54mdmuqd8bb": {
+      "opts": {
+        "questions": [
+          "3q3sk7bv3o1"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "2mb8ksdlio1",
+              "v": "Windows computer"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "55nmbahm3hr": {
+      "opts": {
+        "questions": [
+          "egvlprgee4"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "hq9q78jcol",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "590bnr99u9h": {
+      "opts": {
+        "questions": [
+          "7fhh8jsmte3"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "751geadb3uq",
+              "v": "Fedora"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "5c5uhnmva6k": {
+      "opts": {
+        "max": 3,
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "IP address exposure"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Metadata leakage (who talks to whom, when, where)"
+          },
+          {
+            "uid": "789tjfmuvpl",
+            "v": "Traffic correlation / profiling"
+          },
+          {
+            "uid": "7hf7j095hvh",
+            "v": "Centralized VPN providers logging activity"
+          },
+          {
+            "uid": "97rofp88d",
+            "v": "Surveillance by ISPs or governments"
+          },
+          {
+            "uid": "79uc27bmaai",
+            "v": "Surveillance by platforms / big tech"
+          },
+          {
+            "uid": "gs33uq79ho",
+            "v": "I’m not sure / still learning"
+          }
+        ]
+      },
+      "q": "Which of the following privacy concerns matter most to you?",
+      "type": "checkbox"
+    },
+    "5fk0s83293c": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "10 (Buster)"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "11 (Bullseye)"
+          },
+          {
+            "uid": "3glk3t2b588",
+            "v": "12 (Bookworm)"
+          },
+          {
+            "uid": "42j68ghnc7c",
+            "v": "13 (Trixie)"
+          },
+          {
+            "uid": "1j4d3c9nane",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Debian version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "5ik21unrf8b": {
+      "opts": {
+        "questions": [
+          "4tivptra5bj"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "3slis694l1t",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "5rj5616rdvn": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Share your Signal share link",
+      "type": "input"
+    },
+    "5t6ksl0iqa": {
+      "opts": {
+        "questions": [
+          "532h37so56h"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "7fhh8jsmte3",
+              "uid": "5psfdlv62vj",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "5v3p01n631": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "23.x"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "24.x"
+          },
+          {
+            "uid": "7mc6l911q4p",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Manjaro version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "62se1rcg05q": {
+      "opts": {
+        "questions": [
+          "9kgkp446f2v"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "mtuzy73lro6",
+              "v": "Mac computer"
+            },
+            {
+              "is": 1,
+              "q": "2fs2iq15jpn",
+              "uid": "e8l5450vyne",
+              "v": "Chip: Apple M1, M2, M3, M4 (or similar)"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "63pqggbmdsf": {
+      "opts": {
+        "questions": [
+          "2bh13eb6o3t"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "4i0dp528e9v",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "644rl9tj66i": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Signal"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Telegram"
+          },
+          {
+            "uid": "q3pm04gjee",
+            "v": "E-Mail"
+          }
+        ]
+      },
+      "q": "Where should we contact you?",
+      "type": "radio"
+    },
+    "651nu5kvd9j": {
+      "opts": {
+        "questions": [
+          "478ucat9jme"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "12fosppso60",
+              "uid": "822kohph90",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "6g070kmba46": {
+      "opts": {
+        "questions": [
+          "5fk0s83293c"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "5hpum9lb7oa",
+              "v": "Debian"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "6lf1pggivjt": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "6spclf8mlev": {
+      "opts": {
+        "questions": [
+          "6lf1pggivjt"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "1tqi110vkqa",
+              "uid": "2ekluf4l06c",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "77q3r23bo17": {
+      "opts": {
+        "questions": [
+          "16gbm459iq7"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "5v3p01n631",
+              "uid": "6avth8i1sg1",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "7f2jgitg4m4": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "7fhh8jsmte3": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "38"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "39"
+          },
+          {
+            "uid": "1gknl731dic",
+            "v": "40"
+          },
+          {
+            "uid": "92joq0nhme",
+            "v": "Rawhide (development)"
+          },
+          {
+            "uid": "4fd1r82t27g",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Fedora version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
+      "type": "radio"
+    },
+    "7nip27pk43v": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Share your Telegram username",
+      "type": "input"
+    },
+    "7nua9oqa27f": {
+      "opts": {
+        "questions": [
+          "3m8ytop4th5"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "2p5ixdv9jzv",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "1qmzjovqauz",
+              "v": "Debian"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "7r1dshvt55s": {
+      "opts": {
+        "questions": [
+          "3dbq9p3qqtu"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "17tmkfcs7t4",
+              "uid": "6035l8bm9ji",
+              "v": "Yes"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "7r9fu4u56vc": {
+      "opts": {
+        "questions": [
+          "644rl9tj66i"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "4o2jtfpjgot",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "7v137d7gobd": {
+      "opts": {
+        "questions": [
+          "12fosppso60"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "6jvbh5m95rr",
+              "v": "openSUSE"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "7vhnk6d6il7": {
+      "opts": {
+        "questions": [
+          "7f2jgitg4m4"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "4hrirdrheud",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "9kgkp446f2v": {
+      "opts": {
+        "text": "**Your Mac is supported. You will get early access on November 16.**"
+      },
+      "type": "md"
+    },
+    "azg88w4hr0a": {
+      "opts": {
+        "text": "**No problem if you're not sure which chip your Mac has. Please sign up anyway. We'll reach out to check what you're running before early access starts.**"
+      },
+      "type": "md"
+    },
+    "beqtn4bnnt": {
+      "opts": {
+        "text": "Thank you! Once you are selected for onboarding, we will be in touch via Signal with your access details. The message will come from **@GnosisVPN_Support.01**.\n\nPlease be aware of scammers. We will never contact you from any other handle or ask for private keys, seed phrases, or payments."
+      },
+      "type": "md"
+    },
+    "bfnl2bzz3ow": {
+      "opts": {
+        "text": "**We're working on iPhone and iPad support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "c8wqo2r7h5p": {
+      "opts": {
+        "text": "**We're working on support for more Linux distributions. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "ccvstiq00i": {
+      "opts": {
+        "questions": [
+          "43ss8i8ulhr",
+          "136dq8ukgej"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "644rl9tj66i",
+              "uid": "4pngrdvcbsd",
+              "v": "E-Mail"
+            },
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "2oc5hjo5fmc",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "ckovcwc6ccj": {
+      "opts": {
+        "questions": [
+          "ifof2r01vvl"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "ftakbm9ec2t",
+              "v": "GrapheneOS Phone / Tablet"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "cq5c66t823": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "Ubuntu"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "Debian"
+          },
+          {
+            "uid": "1jn8muptkf4",
+            "v": "Fedora"
+          },
+          {
+            "uid": "2lh2rfl6eob",
+            "v": "Arch Linux"
+          },
+          {
+            "uid": "3ebmunuu741",
+            "v": "Manjaro"
+          },
+          {
+            "uid": "6pjtmnhveo",
+            "v": "openSUSE"
+          },
+          {
+            "uid": "5k78380ofkn",
+            "v": "Pop!_OS"
+          },
+          {
+            "uid": "41asij3k6oo",
+            "v": "Other"
+          }
+        ]
+      },
+      "q": "Which Linux distribution are you using?",
+      "type": "radio"
+    },
+    "e6xod0ewdg4": {
+      "opts": {
+        "text": "**Ubuntu is supported. You will get early access on November 16.**"
+      },
+      "type": "md"
+    },
+    "egvlprgee4": {
+      "opts": {
+        "required": true,
+        "values": [
+          {
+            "uid": "51dqle72gp6",
+            "v": "I actively seek privacy-preserving tools"
+          },
+          {
+            "uid": "qqb3ktfre",
+            "v": "I balance privacy with convenience"
+          },
+          {
+            "uid": "1gjglo24055",
+            "v": "It depends on the context"
+          },
+          {
+            "uid": "7fd04979u04",
+            "v": "Not a major consideration for me"
+          }
+        ]
+      },
+      "q": "How important is privacy to you when choosing tools and services?",
+      "type": "radio"
+    },
+    "eh1oniqi670": {
+      "opts": {
+        "text": "**We're working on Android support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "fb37umm71t": {
+      "opts": {
+        "questions": [
+          "1tqi110vkqa"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "2hpa38e3avp",
+              "v": "Ubuntu"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "h8go2cgd1u2": {
+      "opts": {
+        "text": "**There are currently no plans to support the other device you specified. If you'd still like to stay in the loop about Gnosis VPN, leave your contact details below, and we'll reach out if anything changes.**"
+      },
+      "type": "md"
+    },
+    "hu9osc3ue6w": {
+      "opts": {
+        "questions": [
+          "2uxzo2oyxz0"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "ky6m1tmlzap",
+              "v": "Windows computer"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "ifof2r01vvl": {
+      "opts": {
+        "text": "**We're working on GrapheneOS support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "mh6htu7z78k": {
+      "opts": {
+        "text": "**We're working on Manjaro support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "mn0l74ek0dg": {
+      "opts": {
+        "questions": [
+          "z6spi63eq21"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "hai5atk8wuc",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "9m5laxzjcd4",
+              "v": "Arch Linux"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "o51e5uygi50": {
+      "opts": {
+        "text": "**We're working on Fedora support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "pkjaii15td5": {
+      "opts": {
+        "text": "**We're working on openSUSE support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "ppbk8o54k4": {
+      "opts": {
+        "required": true,
+        "type": "text"
+      },
+      "q": "Please specify",
+      "type": "input"
+    },
+    "qoqaqjc978": {
+      "opts": {
+        "questions": [
+          "17tmkfcs7t4"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": 2,
+              "uid": "2chldki3lmc",
+              "v": "I understand"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "qpaluubjshf": {
+      "opts": {
+        "questions": [
+          "eh1oniqi670"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "eakvl9huarj",
+              "v": "Android phone / Tablet"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "rimqeqs42od": {
+      "opts": {
+        "questions": [
+          "c8wqo2r7h5p"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "vlsa7ti4wqh",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "uz16bzjbs9t",
+              "v": "Other"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "rwmn4exj58e": {
+      "opts": {
+        "text": "**We're working on Pop!_OS support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "tro5h5uk1wy": {
+      "opts": {
+        "text": "**We're working on support for Macs with an Intel processor. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    },
+    "uiogu065l0x": {
+      "opts": {
+        "questions": [
+          "pkjaii15td5"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "xfbjb2qimp4",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "i7cvu4r642j",
+              "v": "openSUSE"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "um4xgx21up0": {
+      "opts": {
+        "questions": [
+          "o51e5uygi50"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "rcv72p7nbu0",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "7amy9ay4pcl",
+              "v": "Fedora"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "vbrpketexx2": {
+      "opts": {
+        "questions": [
+          "e6xod0ewdg4"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "khtg3vwfb3j",
+              "v": "Linux computer"
+            },
+            {
+              "is": 1,
+              "q": "cq5c66t823",
+              "uid": "c0fitoxjuji",
+              "v": "Ubuntu"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "ya1jpfqm9on": {
+      "opts": {
+        "questions": [
+          "h8go2cgd1u2"
+        ],
+        "when": [
+          [
+            {
+              "is": 1,
+              "q": "2bh13eb6o3t",
+              "uid": "uyb6ocmt4wh",
+              "v": "Other (please specify)"
+            }
+          ]
+        ]
+      },
+      "type": "section"
+    },
+    "z6spi63eq21": {
+      "opts": {
+        "text": "**We're working on Arch Linux support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
+      },
+      "type": "md"
+    }
+  },
+  "order": [
+    "1",
+    "2",
+    "63pqggbmdsf",
+    "4atrdapkiip",
+    "54mdmuqd8bb",
+    "1uhap0sqc96",
+    "fb37umm71t",
+    "6spclf8mlev",
+    "6g070kmba46",
+    "4rifcujvuso",
+    "590bnr99u9h",
+    "5t6ksl0iqa",
+    "3npnq3q9eit",
+    "77q3r23bo17",
+    "7v137d7gobd",
+    "651nu5kvd9j",
+    "2d3vnve0lmr",
+    "1kig1p0oj1",
+    "7vhnk6d6il7",
+    "2s2a7v4r6g6",
+    "62se1rcg05q",
+    "vbrpketexx2",
+    "7nua9oqa27f",
+    "1siaqfs5wth",
+    "27227vlrl1k",
+    "hu9osc3ue6w",
+    "um4xgx21up0",
+    "mn0l74ek0dg",
+    "0gvn3a79l3o",
+    "uiogu065l0x",
+    "3psruucyime",
+    "rimqeqs42od",
+    "3kqcvd01up7",
+    "qpaluubjshf",
+    "ckovcwc6ccj",
+    "ya1jpfqm9on",
+    "qoqaqjc978",
+    "7r1dshvt55s",
+    "55nmbahm3hr",
+    "4nb9gni4811",
+    "5ik21unrf8b",
+    "7r9fu4u56vc",
+    "33p4nsu7369",
+    "1i056bdc42n",
+    "ccvstiq00i"
+  ],
+  "version": 1
+}

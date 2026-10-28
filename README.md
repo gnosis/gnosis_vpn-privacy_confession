@@ -23,6 +23,7 @@ Anonymous confession wall for DappCon 2026. Submissions appear on the wall strai
 |---|---|
 | `DATABASE_URL` | Neon PostgreSQL connection string (use the pooled URL) |
 | `ADMIN_PASSWORD` | Admin panel password |
+| `WAITLIST_KEY` | 32-byte key, base64, that encrypts waitlist contact details. Create one with `openssl rand -base64 32`. Keep a copy: without it the stored contacts can't be read |
 
 ## Running locally
 
