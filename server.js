@@ -310,10 +310,10 @@ app.get('/api/admin/waitlist', adminAuth, async (req, res) => {
   }
 });
 
-// Quoted cells; a leading = + - @ is neutralised so spreadsheets don't run it as a formula
+// Quoted cells; only a leading = is neutralised, so @handles and +phone numbers stay intact
 function csvCell(value) {
   let text = Array.isArray(value) ? value.join('; ') : String(value ?? '');
-  if (/^[=+\-@]/.test(text)) text = "'" + text;
+  if (text.startsWith('=')) text = "'" + text;
   return '"' + text.replace(/"/g, '""') + '"';
 }
 
