@@ -314,9 +314,8 @@ function csvCell(value) {
 
 app.get('/api/admin/waitlist.csv', adminAuth, async (req, res) => {
   const signups = await loadSignups();
-  const header = ['Sent on', 'Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
+  const header = ['Contact via', 'Contact', ...waitlistQuestions.map(q => q.label)];
   const lines = signups.map(s => [
-    s.sent_on,
     s.contact_channel,
     s.contact,
     ...waitlistQuestions.map(q => s.answers[q.id]),
