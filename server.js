@@ -158,7 +158,8 @@ function validateWaitlist(answers) {
     let value;
     if (item.type === 'input') {
       value = typeof given === 'string' ? given.trim() : '';
-      if (value.length > 200) valid = false;
+      // Postgres JSONB can't store \u0000
+      if (value.length > 200 || value.includes('\u0000')) valid = false;
     } else if (item.type === 'radio') {
       value = options.includes(given) ? given : '';
       if (given !== undefined && !value) valid = false;
