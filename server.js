@@ -266,6 +266,23 @@ if (!ADMIN_PW) {
 if (WAITLIST_KEY.length !== 32) {
   console.error('WARNING: WAITLIST_KEY env var is missing or not 32 bytes of base64 (use openssl rand -base64 32). Waitlist sign-ups will be refused.');
 }
+// The ids above come from the CryptPad export; a new export changes them, so say so at startup
+{
+  const problems = [];
+  const channels = (waitlistForm.form[CONTACT_QUESTION]?.opts?.values || []).map(o => o.v);
+  for (const [channel, id] of Object.entries(CONTACT_FIELDS)) {
+    if (!channels.includes(channel)) problems.push(`"${channel}" is not an option of ${CONTACT_QUESTION}`);
+    if (waitlistForm.form[id]?.type !== 'input') problems.push(`contact field ${id} is missing`);
+  }
+  for (const [id, item] of Object.entries(waitlistForm.form)) {
+    const rulesOk = item.type !== 'section' || (Array.isArray(item.opts.when) &&
+      item.opts.when.every(group => group.every(c => c.is === 1 && waitlistForm.form[c.q])));
+    if (!rulesOk) problems.push(`section ${id} uses show/hide rules the server doesn't handle`);
+  }
+  if (problems.length) {
+    console.error('WARNING: waitlist-form.json does not match server.js, sign-ups will fail: ' + problems.join('; '));
+  }
+}
 
 // Local dev: listen directly. Vercel imports this file and uses module.exports.
 if (require.main === module) {
