@@ -573,24 +573,6 @@
       },
       "type": "section"
     },
-    "4nb9gni4811": {
-      "opts": {
-        "questions": [
-          "5c5uhnmva6k"
-        ],
-        "when": [
-          [
-            {
-              "is": 1,
-              "q": 2,
-              "uid": "56c0u9c1fhv",
-              "v": "I understand"
-            }
-          ]
-        ]
-      },
-      "type": "section"
-    },
     "4rifcujvuso": {
       "opts": {
         "questions": [
@@ -608,31 +590,6 @@
         ]
       },
       "type": "section"
-    },
-    "4tivptra5bj": {
-      "opts": {
-        "required": true,
-        "values": [
-          {
-            "uid": "51dqle72gp6",
-            "v": "I already use privacy tools (VPNs, Tor, private messengers, etc.)"
-          },
-          {
-            "uid": "qqb3ktfre",
-            "v": "I’m transitioning toward more privacy-respecting tools"
-          },
-          {
-            "uid": "7demed4j039",
-            "v": "I’m curious but still new to privacy topics"
-          },
-          {
-            "uid": "1082gf0k5vj",
-            "v": "I mostly just want a VPN that works"
-          }
-        ]
-      },
-      "q": "Which statement best describes you?",
-      "type": "radio"
     },
     "50n9oennlcj": {
       "opts": {
@@ -676,24 +633,6 @@
       },
       "type": "section"
     },
-    "55nmbahm3hr": {
-      "opts": {
-        "questions": [
-          "egvlprgee4"
-        ],
-        "when": [
-          [
-            {
-              "is": 1,
-              "q": 2,
-              "uid": "hq9q78jcol",
-              "v": "I understand"
-            }
-          ]
-        ]
-      },
-      "type": "section"
-    },
     "590bnr99u9h": {
       "opts": {
         "questions": [
@@ -711,44 +650,6 @@
         ]
       },
       "type": "section"
-    },
-    "5c5uhnmva6k": {
-      "opts": {
-        "max": 3,
-        "required": true,
-        "values": [
-          {
-            "uid": "51dqle72gp6",
-            "v": "IP address exposure"
-          },
-          {
-            "uid": "qqb3ktfre",
-            "v": "Metadata leakage (who talks to whom, when, where)"
-          },
-          {
-            "uid": "789tjfmuvpl",
-            "v": "Traffic correlation / profiling"
-          },
-          {
-            "uid": "7hf7j095hvh",
-            "v": "Centralized VPN providers logging activity"
-          },
-          {
-            "uid": "97rofp88d",
-            "v": "Surveillance by ISPs or governments"
-          },
-          {
-            "uid": "79uc27bmaai",
-            "v": "Surveillance by platforms / big tech"
-          },
-          {
-            "uid": "gs33uq79ho",
-            "v": "I’m not sure / still learning"
-          }
-        ]
-      },
-      "q": "Which of the following privacy concerns matter most to you?",
-      "type": "checkbox"
     },
     "5fk0s83293c": {
       "opts": {
@@ -778,24 +679,6 @@
       },
       "q": "Which Debian version are you using? (If you’re not sure, you can usually see this by running one of the following commands in your terminal: \"cat /etc/os-release\", \"lsb_release -a\", \"inxi -S\" or \"fastfetch\")",
       "type": "radio"
-    },
-    "5ik21unrf8b": {
-      "opts": {
-        "questions": [
-          "4tivptra5bj"
-        ],
-        "when": [
-          [
-            {
-              "is": 1,
-              "q": 2,
-              "uid": "3slis694l1t",
-              "v": "I understand"
-            }
-          ]
-        ]
-      },
-      "type": "section"
     },
     "5rj5616rdvn": {
       "opts": {
@@ -1248,31 +1131,6 @@
       },
       "type": "md"
     },
-    "egvlprgee4": {
-      "opts": {
-        "required": true,
-        "values": [
-          {
-            "uid": "51dqle72gp6",
-            "v": "I actively seek privacy-preserving tools"
-          },
-          {
-            "uid": "qqb3ktfre",
-            "v": "I balance privacy with convenience"
-          },
-          {
-            "uid": "1gjglo24055",
-            "v": "It depends on the context"
-          },
-          {
-            "uid": "7fd04979u04",
-            "v": "Not a major consideration for me"
-          }
-        ]
-      },
-      "q": "How important is privacy to you when choosing tools and services?",
-      "type": "radio"
-    },
     "eh1oniqi670": {
       "opts": {
         "text": "**We're working on Android support. It won't be ready on November 16. Please still sign up. We'll reach out to you when it launches and give you early access then.**"
@@ -1585,9 +1443,6 @@
     "ya1jpfqm9on",
     "qoqaqjc978",
     "7r1dshvt55s",
-    "55nmbahm3hr",
-    "4nb9gni4811",
-    "5ik21unrf8b",
     "7r9fu4u56vc",
     "33p4nsu7369",
     "1i056bdc42n",
