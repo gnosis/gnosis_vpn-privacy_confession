@@ -373,6 +373,7 @@
       line-height: 1.2;
     }
     .form-card {
+      position: relative;
       width: 100%;
       background: #fff;
       border-radius: 32px;
@@ -423,6 +424,21 @@
       text-transform: none;
     }
     #private-view button:hover { background: #3b30c4; color: #fff; }
+    #private-view button#form-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      background: #f0effa;
+      color: #331bce;
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+    #private-view button#form-close:hover { background: #e1def8; }
+    #waitlist-form > :first-child { padding-right: 2.5rem; }
 
     footer {
       position: fixed;
@@ -512,6 +528,7 @@
       <div id="private-form">
         <h2>Change your connection to privacy</h2>
         <div class="form-card">
+          <button id="form-close" type="button" aria-label="Close the form and go back to the start">×</button>
           <form id="waitlist-form" novalidate></form>
         </div>
         <p id="wf-error" hidden></p>
@@ -745,6 +762,9 @@
       privateView.style.display = 'block';
       privateView.scrollTop = 0;
     });
+
+    // Leaving without signing up: back to page 1, nothing saved
+    document.getElementById('form-close').addEventListener('click', resetToForm);
 
     sendBtn.addEventListener('click', async () => {
       const answers = {};
