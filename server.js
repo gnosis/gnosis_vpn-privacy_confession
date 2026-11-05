@@ -15,6 +15,8 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 });
+// Neon drops idle connections; an unhandled pool 'error' event would crash the process
+pool.on('error', e => console.error('Idle DB client error:', e));
 
 async function initDb() {
   await pool.query(`
@@ -41,15 +43,19 @@ async function initDb() {
   `);
 }
 
-// Run once on module load — works for both local and Vercel serverless
-const dbReady = initDb();
+// A failed init is forgotten so the next request retries; a cached rejection 503s a warm instance until redeploy
+let dbReady = null;
+function ensureDb() {
+  dbReady ??= initDb().catch(e => { dbReady = null; throw e; });
+  return dbReady;
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // All routes wait for DB to be ready before proceeding
 app.use(async (req, res, next) => {
-  try { await dbReady; next(); }
+  try { await ensureDb(); next(); }
   catch (e) { console.error('DB init error:', e); res.status(503).json({ error: 'Database unavailable' }); }
 });
 
@@ -392,7 +398,7 @@ if (WAITLIST_KEY.length !== 32) {
 
 // Local dev: listen directly. Vercel imports this file and uses module.exports.
 if (require.main === module) {
-  dbReady
+  ensureDb()
     .then(() => app.listen(PORT, () => {
       console.log(`Running on http://localhost:${PORT}`);
       console.log(`Admin panel: http://localhost:${PORT}/admin`);
